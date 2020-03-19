@@ -1,0 +1,167 @@
+---
+title: "Lab 2 - Research Plan and Dataset Hopping"
+output: 
+  github_document:
+    toc: true
+    toc_depth: 2
+editor_options: 
+  chunk_output_type: inline
+---
+
+## Instructions and Overview
+
+R Markdown is an authoring framework for R. It enables you to style and publish documents with code for data analysis embedded within it. In future labs, we will embed code in our documents. However for now, here are a few tricks for styling documents in R Markdown. 
+
+### Code Chunks
+
+```{r eval=FALSE}
+This grey box between ```{r} and ``` is a code chunk. 
+
+Typically, when we put code in this chunk and then publish our R Markdown document, 
+the code written here will be run and output on the screen. 
+
+However, by placing eval=FALSE in the brackets, we tell R not to evaluate the code. 
+
+This is useful when we are just filling text into the code chunk.
+```
+
+### Headings
+
+```{r eval=FALSE}
+Use '#' to create headings:
+  
+# Heading 1
+## Heading 2
+### Heading 3
+```
+
+### Tables
+
+```{r eval=FALSE}
+Tables can be formated like this:
+  
+Header 1 | Header 1
+-------- | --------
+Cell 1  | Cell 2
+Cell 3  | Cell 4
+ 
+  
+```
+
+Header 1 | Header 1
+-------- | --------
+Cell 1  | Cell 2
+Cell 3  | Cell 4
+
+### Bullets and Numbering
+
+```{r eval=FALSE}
+You can bullet content using the '*':
+
+* Point 1
+* Point 2
+```
+
+This will output:
+
+* Point 1
+* Point 2
+
+```{r eval=FALSE}
+You can number content like this:
+
+1. Point 1
+2. Point 2
+```
+
+This will output:
+
+1. Point 1
+2. Point 2
+
+
+For more information about formatting documents in R Markdown see [this](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) cheatsheet. Note how I created a hyperlink here!
+
+---
+
+## Research Plan
+
+### What topic am I interested in investigating?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### Why is this topic relevant to contemporary public health issues?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### What are my social-theoretical questions?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### What are my empirical research questions?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### What data do I believe exists about this topic?
+
+Fill response in the table below:
+
+Dataset | Do you think this data is accessible?
+-------- | --------
+Number of cases of Covid-19 globally  | Yes
+Fill | Fill
+Fill | Fill
+Fill | Fill
+Fill | Fill
+Fill | Fill
+
+### What are the key events, dates, or years relevant to this topic?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### What are the key sites, locations, or geographies relevant to this topic?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### What are some of the most common ways different social groups talk about this topic?
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+---
+
+## Dataset Hopping
+
+Questions
+
+* Dataset?: What is the title of the dataset?
+* Found?: Where did you find it?
+* Formats?: In what formats is it available for download?
+* DD?: Is there a data dictionary or data documentation available for download?
+* Timespan?: What range of time does it cover?
+* Geography? What geographic range does it cover? 
+* Row?: What does each row in the dataset represent?
+* Update?: How often is the dataset updated?
+
+Dataset? | Found? | Formats? | DD? | Timespan? | Geography? | Row? | Update?
+------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
+Novel Coronavirus (COVID-19) Cases Data | https://data.humdata.org/dataset/novel-coronavirus-2019-ncov-cases | .csv | No | Jan 22, 2020 to Present  | Global by State/Country | Cases per day by State/Country | Live 
+Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill
+Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill
+Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill
+Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill
+
+
