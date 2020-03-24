@@ -1,0 +1,520 @@
+Lab 5 - Data Variation and Co-Variation
+================
+
+  - [Instructions and Overview](#instructions-and-overview)
+  - [Getting Started](#getting-started)
+  - [Variation](#variation)
+  - [Co-variation](#co-variation)
+  - [Start a shiny app.](#start-a-shiny-app.)
+
+## Instructions and Overview
+
+In class, we have been discussing how to graphically represent variation
+and covariation in a dataset. This assignment will apply these ideas to
+your own dataset. To begin you will need to import and clean your
+dataset. You may reference last week’s lab to help with this. After
+this, you should follow the prompts and complete the short answer
+questions. In total, you should produce at least 4 plots that display
+variation and at least 4 plots that display
+    co-variation.
+
+## Getting Started
+
+### Load the relevant libraries
+
+``` r
+library(tidyverse)
+```
+
+    ## ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+
+    ## ✔ ggplot2 3.2.0     ✔ purrr   0.3.3
+    ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
+    ## ✔ tidyr   0.8.3     ✔ stringr 1.4.0
+    ## ✔ readr   1.3.1     ✔ forcats 0.4.0
+
+    ## ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
+library(lubridate)
+```
+
+    ## 
+    ## Attaching package: 'lubridate'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     date
+
+``` r
+library(shiny)
+library(shinydashboard)
+```
+
+    ## 
+    ## Attaching package: 'shinydashboard'
+
+    ## The following object is masked from 'package:graphics':
+    ## 
+    ##     box
+
+### Import your dataset
+
+``` r
+setwd("/Users/lpoirier/Documents/GitHub/STS-115")
+hospitals <- read.csv("datasets/Hospitals.csv", stringsAsFactors = FALSE)
+  
+#Copy and paste relevant code from Lab 4 to import your data here. 
+```
+
+### Clean your dataset
+
+``` r
+#Copy and paste relevant code from Lab 4 to clean your data here. This includes any row binding, character removals, converions in variable type, date formatting, or NA conversions. 
+```
+
+## Variation
+
+Variation is the extent to which the values that constitute a particular
+variable vary from observation to observation. To visualize variation,
+we might consider:
+
+1.  The number of times each value appears in a categorial variable.
+    This will tell us how the observations in the dataset *vary* in
+    regards to that variable. We can represent this as a bar plot.
+
+<!-- end list -->
+
+``` r
+#df %>% ggplot(aes(x = CATEGORICAL_VARIABLE)) + geom_bar()
+
+hospitals %>% 
+  ggplot(aes(x = TYPE)) + 
+  geom_bar() +
+  labs(title = "Number of Hospitals in the US by Type") + #Adds a title to the plot
+  theme(axis.text.x = element_text(angle = 90, hjust=1)) #Changes x-axis tick labels 90 degrees
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+2.  The distribution of values in a numeric variable within a designated
+    set of increments. This will tell us how the observations in the
+    dataset *vary* in regards to that variable. We can represent this as
+    a frequency plot.
+
+<!-- end list -->
+
+``` r
+#df %>% ggplot(aes(x = NUMERIC_VARIABLE)) + geom_freqpoly(binwidth = 1)
+
+hospitals %>% 
+  ggplot(aes(x = BEDS)) +
+  geom_freqpoly(binwidth = 10)
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
+# Note how there are about 700 hospitals with a bed count around -1000. This gives us an indication that the dataset is using -999 to mark null numeric values. We may have caught something like this in our data cleaning phase. Let's go ahead and convert those fields to NAs and run the code again.
+
+is.na(hospitals) <- hospitals == -999
+
+hospitals %>% 
+  ggplot(aes(x = BEDS)) +
+  geom_freqpoly(binwidth = 10)
+```
+
+    ## Warning: Removed 662 rows containing non-finite values (stat_bin).
+
+![](lab5_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+
+> Note that binwidth refers to the size of the increments at which
+> frequency will be calculated. Above the binwidth is set to 1. This
+> means that ggplot will display the frequency of each value at
+> intervals of 1, 2, 3, 4, etc. When we set the bindwidth to 10, ggplot
+> will display the frequency of each value at intervals of 10, 20, 30,
+> 40. etc. What difference does this make?
+
+``` r
+#Let's say we have a vector of ruler measurements:
+
+ruler_measurements <- c(0.7, 1.2, 1.2, 1.4, 1.5, 1.6, 2.3, 3.6, 3.8, 3.9)
+df <- data.frame(ruler_measurements)
+
+#When we set the binwidth to 0.1, it counts the numbers of values that appear in each increment of 0.1. Since our values are already being record to the tenths, we will see a count of 1 for each value except 1.2, which appears in the vector twice.
+df %>% ggplot(aes(x = ruler_measurements)) + geom_freqpoly(binwidth = 0.1)
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+#When we set the binwidth to 1, it counts the numbers of values that appear in each increment of 1. In this case, because we have decimals, values from -0.5 to 0.5 are included in each count. You'll notice at interval one, we see a count of 5, which includes: 0.7, 1.2, 1.2, 1.4, and 1.5. This is likely the most useful binwidth for this plot. 
+df %>% ggplot(aes(x = ruler_measurements)) + geom_freqpoly(binwidth = 1) 
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+
+``` r
+#When we set the binwidth to 10, it counts the numbers of values that appear in each increment of 10. Since all values are less than 10, all values are included in one count.
+df %>% ggplot(aes(x = ruler_measurements)) + geom_freqpoly(binwidth = 10)
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
+
+``` r
+#Now let's say we have a vector of ages:
+
+ages <- c(15, 22, 24, 27, 28, 30, 33, 40, 45, 58)
+df <- data.frame(ages)
+
+#When we set the binwidth to 0.1, it counts the numbers of values that appear in each increment of 0.1. Since our values are recorded in whole numbers, this binwidth doens't tell us much about frequency.
+df %>% ggplot(aes(x = ages)) + geom_freqpoly(binwidth = 0.1)
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+``` r
+#When we set the binwidth to 1, it counts the numbers of values that appear in each increment of 1. Since no whole numbers in the vector repeat, the frequency for each age in the vector will be 1.
+df %>% ggplot(aes(x = ages)) + geom_freqpoly(binwidth = 1) 
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
+
+``` r
+#When we set the binwidth to 10, it counts the numbers of values that appear in each increment of 10. This allows us to count the number of people in each 10-year age bracket. This is likely the most useful binwidth for this plot. 
+df %>% ggplot(aes(x = ages)) + geom_freqpoly(binwidth = 10)
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->
+
+### Some Helpful Tools to Adjust the Appearance of your Plot:
+
+``` r
+covid_cases_per_country <- c(80967,41035,18407,18077,15320,14365,10995,8652,4222,3269,2460,2196,1795,1790,1439,1151,963,900,873,814,786,712,694,677,647,557,464,460,454,400,359,355,345,342,335,330,322,319,309,279,277,274,267,260,256,234,217,208,201,199,192,164,157,150,148,144,140,137,128,128,124,122,110,108,107,103,94,90,89,86,85,74,73,73,72,69,67,64,64,63,60,53,51,50,49,49,48,48,47,44,42,40,39,39,37,36,34,33,33,28,28,26,24,23,23,22,18,17,17,16,16,15,14,13,13,13,13,12,12,11,11,11,11,10,10,9,9,9,9,7,7,6,6,6,6,6,6,5,5,5,4,3,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+df <- data.frame(covid_cases_per_country)
+
+#Without formatting:
+df %>% 
+  ggplot(aes(x = covid_cases_per_country)) + 
+  geom_freqpoly(binwidth = 1000) 
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+#With formatting:
+df %>% 
+  ggplot(aes(x = covid_cases_per_country)) + 
+  geom_freqpoly(binwidth = 1000) +
+  labs(title = "Distribution of Covid-19 Case Loads as of March 19, 2020", x = "Number of Covid-19 Cases Recorded", y = "Count of Countries") + # To add titles and labels
+  theme_bw() + # To change the plot theme
+  theme(axis.text.x = element_text(angle = 90, hjust=1)) + # To turn x-axis ticks 90 degrees
+  scale_x_continuous(labels = scales::comma)  # To set x-axis ticks to comma notation
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
+
+### Select a categorical variable for which you want to visualize the frequency of times it appears in the dataset. I recommend that you select one of the same categorical variables that you analyzed with the distinct() function last week. At this point hold off on selecting a geographic categorical variable, such as Country, State, or County.
+
+``` r
+#Uncomment the line below and fill appropriately. Add a title and labels to your plots.
+#_____ %>% ggplot(aes(x = _____)) + geom_bar()
+```
+
+Reflect on the distribution of categories in the dataset. Is there an
+even distribution of observations across each category, or are certain
+categories more represented than others? Why might this be? What does
+this say about the social, political, or economic landscape of your
+topic?
+
+``` r
+Fill response here. 
+```
+
+Reflect on what you learned about the history of the categories you
+plotted above in last week’s lab. How have the social, political, and
+economic forces shaping this categorization impacted how we count
+observations related to this topic? How might this plot look different
+if this variable had been categorized in a different
+way?
+
+``` r
+Fill response here. 
+```
+
+### Select a numeric variable for which you want to visualize the frequency of a set of values.
+
+``` r
+#Uncomment the line below and fill appropriately. Add a title and labels to your plots.
+#_____ %>% ggplot(aes(x = _____)) + geom_freqpoly(binwidth = _____)
+```
+
+This gives us information about the distribution of values in the
+dataset. Reflect on the distribution of values. What are the range of
+values represented in the data? Are the values evenly distributed, or
+are certain values more represented than others? Why might this be? Do
+any of the values surprise you? Why?
+
+``` r
+Fill response here. 
+```
+
+Why did you select the binwidth that you did? How might the story your
+plot tells change if you were to change the binwidth? What anomalies
+might be hidden with a larger binwidth, and what trends might be hidden
+with a smaller binwidth?
+
+``` r
+Fill response here. 
+```
+
+Check how the numeric variable was defined in the data dictionary, and
+quote the defintion below. How might the counts represented in your
+frequency plot appear differently if this variable was defined
+differently?
+
+``` r
+Fill response here. 
+```
+
+### Produce two more plots that display variation. Continue to hold off on selecting a geographic categorical variable.
+
+``` r
+#Fill the code for plot 1 here. Add a title and labels to your plots.
+```
+
+What insight can you draw from this plot?
+
+``` r
+Fill your response here. 
+```
+
+``` r
+#Fill the code for plot 2 here. Add a title and labels to your plots.
+```
+
+What insight can you draw from this plot?
+
+``` r
+Fill your response here. 
+```
+
+## Co-variation
+
+Co-variation is the extent to which the values that constitute two or
+more variables vary in relation to one another. To visualize variation,
+we might consider:
+
+1.  How many times two categorical values appear together in a
+dataset
+
+<!-- end list -->
+
+``` r
+#df %>% ggplot(aes(x = CATEGORICAL_VARIABLE, y = CATEGORICAL_VARIABLE)) + geom_count()
+
+hospitals %>% 
+  ggplot(aes(x = TYPE, y = OWNER)) + 
+  geom_count() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+![](lab5_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+2.  The distribution of numeric values in a variable, grouped by a
+    categorical
+value
+
+<!-- end list -->
+
+``` r
+#df %>% ggplot(aes(x = NUMERIC_VARIABLE, col = CATEGORICAL_VARIABLE)) + geom_freqpoly(binwidth = 1)
+
+hospitals %>% 
+  ggplot(aes(x = BEDS, col = TYPE)) + 
+  geom_freqpoly(binwidth = 100) +
+  theme_bw()
+```
+
+    ## Warning: Removed 662 rows containing non-finite values (stat_bin).
+
+![](lab5_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+3.  The relationship between a categorical variable and a numeric
+    variable
+
+<!-- end list -->
+
+``` r
+#df %>% ggplot(aes(x = CATEGORICAL_VARIABLE, y = NUMERIC_VARIABLE)) + geom_point()
+
+hospitals %>% 
+  ggplot(aes(x = TYPE, y = BEDS)) + 
+  geom_point() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+    ## Warning: Removed 662 rows containing missing values (geom_point).
+
+![](lab5_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+# Note that the plot above exhibits overplotting - when the data represented on a plot overlaps, making it difficult to discern one point from the next. There are various tools available to deal with over-plotting. You can reduce the size of points on the plot, increase their transparency, or set them to slightly offset each other (known as adding jitter). We do all three below.
+
+hospitals %>% 
+  ggplot(aes(x = TYPE, y = BEDS)) + 
+  geom_jitter(size = 0.5, alpha = 0.1) + #Change geom_point to geom_jitter, reduce the size, add transparency for overplotting
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+    ## Warning: Removed 662 rows containing missing values (geom_point).
+
+![](lab5_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
+
+``` r
+# Also note that sometimes, when we add more aesthetics to the plot, we can run into other issues with overplotting. For instance, when set set the color of the point to represent the owner, it can be difficult to discern points when we've set them to a degree of transparency. Here we can change the shape of the point to an outline. 
+hospitals %>% 
+  ggplot(aes(x = TYPE, y = BEDS, col = OWNER)) + 
+  geom_jitter(size = 1, alpha = 0.8, shape = 21) + #Shape 21 is an outline of a point. 
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+    ## Warning: Removed 662 rows containing missing values (geom_point).
+
+![](lab5_files/figure-gfm/unnamed-chunk-22-3.png)<!-- -->
+
+4.  The relationship or correlation between two numeric variables
+
+<!-- end list -->
+
+``` r
+#ggplot(df, aes(NUMERIC_VARIABLE, NUMERIC_VARIABLE)) + geom_point()
+
+hospitals %>% 
+  ggplot(aes(x = BEDS, y = POPULATION)) + 
+  geom_point(size = 0.5) +
+  theme_bw()
+```
+
+    ## Warning: Removed 709 rows containing missing values (geom_point).
+
+![](lab5_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+> Note how this plot is particularly useful for finding
+outliers.
+
+### Produce four plots that represent co-variation in your dataset. You need not include every plot I described above. At this point, please continue to hold off on selecting a geographic categorical variable.
+
+``` r
+#Fill the code for plot 1 here. Add a title and labels to your plots. Be sure to adjust for overplotting.
+```
+
+What insight can you draw from this
+plot?
+
+``` r
+Fill your response here. 
+```
+
+``` r
+#Fill the code for plot 2 here. Add a title and labels to your plots. Be sure to adjust for overplotting.
+```
+
+What insight can you draw from this
+plot?
+
+``` r
+Fill your response here. 
+```
+
+``` r
+#Fill the code for plot 3 here. Add a title and labels to your plots. Be sure to adjust for overplotting.
+```
+
+What insight can you draw from this
+plot?
+
+``` r
+Fill your response here. 
+```
+
+``` r
+#Fill the code for plot 4 here. Add a title and labels to your plots. Be sure to adjust for overplotting.
+```
+
+What insight can you draw from this plot?
+
+``` r
+Fill your response here. 
+```
+
+## Start a shiny app.
+
+At this point in the quarter, we are prepared to start piecing together
+a dashboard for displaying the data. Shiny Apps have two components - a
+front end (ui), and a backend (server). On the front end, we will be
+coding how we want our data displayed. **For this week, the only thing
+you need to do on the front end is fill in your title.** On the backend,
+we will be coding our data analysis.
+
+Fill in your title in the UI.
+
+``` r
+ui <- dashboardPage(
+  
+  dashboardHeader(title = "TITLE HERE"),
+  
+  dashboardSidebar(
+    #inputs will go here. 
+  ),
+  
+  dashboardBody(
+      plotOutput("plot1"),
+      plotOutput("plot2")
+  )
+)
+```
+
+Replace my plots in the code with two of the plots that you created in
+this lab.
+
+``` r
+server <- function(input, output, session) {
+  
+  output$plot1 <- renderPlot({
+    hospitals %>% ggplot(aes(x = TYPE)) + geom_bar()
+    #Replace plot above with your own plot. 
+    
+  })
+  
+  output$plot2 <- renderPlot({
+    hospitals %>% ggplot(aes(x = TYPE)) + geom_bar()
+    #Replace plot above with your own plot. 
+  })
+  
+}
+```
+
+``` r
+shinyApp(ui, server)
+```
+
+<!--html_preserve-->
+
+<div class="muted well" style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;">
+
+Shiny applications not supported in static R Markdown documents
+
+</div>
+
+<!--/html_preserve-->
+
+When you knit this notebook, you will get a prompt asking whether you
+would prefer to render and run this document as Shiny. Click No. We will
+be leaving this notebook in a GitHub document format.

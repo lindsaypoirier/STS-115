@@ -1,0 +1,768 @@
+---
+title: "Lab 4 - Data Cleaning and Exploration"
+output: 
+  github_document:
+    toc: true
+    toc_depth: 2
+editor_options: 
+  chunk_output_type: inline
+---
+
+## Instructions and Overview
+
+For this assignment, you will select one dataset from your dataset hopping lab to import into R, clean, and examine further. Be sure to fill in the blanks in the document as you go. 
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+## Data Download
+
+First, we will need to determine if we should filter your data to relevant features before downloading it. For some students this will be possible prior to downloading it. For others, it won't. In either case, please fill out the questions below. 
+
+### What timespan represented in the data is relevant to your research questions?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### What geography represented in the data is relevant to your research questions?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### What specific categories in the data are relevant to your research questions?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Where is the data stored, and how can you download it?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+Do you need to/ can you filter the data to the relevant timeframe/geography/category prior to downloading it? You may need to create an account in the data portal in order to filter the data prior to download. If this is the case:
+
+1. Create an account.
+2. Filter and Save the data.
+3. Download the filtered file as a csv.
+
+Otherwise, just go ahead and download the data.
+
+## Data Formatting and Importing
+
+### In what format is the data stored?
+
+* If it is stored as an Excel file:
+  1. Download the data, and open it in Excel. 
+  2. Ensure that variable names are in the first row of the sheet, and all observations are stored in the following rows. Remove any extra headings or instructions.
+  3. Click File>Save As, and Save the file as a .csv. You will be prompted to acknowledge that you are only saving one sheet. Click OK.
+
+> It is possible to read Excel files into R. However, to reduce headaches, I'm going to encourage that everyone put their data in this .csv format before importing. 
+
+* If it is stored as a .csv file, you are all set to move forward.
+
+For these projects, all data will be stored in and accessed via GitHub, so that we need not worry about working with different file paths on our computers. To upload your dataset to GitHub, move the data to Documents > GitHub > STS115_Course_Project > datasets. FILL
+
+There are a few ways to import data into RStudio. You should will be importing the data for
+```{r}
+setwd("/Users/lpoirier/Documents/GitHub/STS-115")
+hospitals <- read.csv("datasets/Hospitals.csv", stringsAsFactors = FALSE)
+```
+
+
+```{r}
+# Uncomment the line below. Create an appropriate variable name for your data frame, and fill the file name below to import the data into RStudio
+
+# _____ <- read.csv("______", stringsAsFactors=FALSE)
+```
+
+### Is the data stored in multiple files?
+
+If not, skip to the next heading.
+
+First, ensure that all files have the same headings. You may open the .csv files in Excel to examine this. 
+
+Read each file into a data frame. Be sure to provide a different variable name for each data frame. 
+```{r}
+# Uncomment the line below. Create an appropriate variable name for your dataframe, and fill the file name below to import the data into RStudio
+# _____ <- read.csv("______", stringsAsFactors=FALSE)
+# _____ <- read.csv("______", stringsAsFactors=FALSE)
+# _____ <- read.csv("______", stringsAsFactors=FALSE)
+# Continue adding this line for each file you need to import. 
+```
+
+What makes each data frame unique? Are they separated by geography? By year? Add a column to each data frame to designate what makes it unique from the others, using the mutate function.
+
+```{r}
+#Uncomment the last line below and follow the format below with your data frame. 
+
+#Example, if by year:
+#df <- df %>% mutate(year = 2019)
+#Note that 'year' will be the new column name, and the values for that column will be filled with 2019
+
+#Example, if by geography:
+#df <- df %>% mutate(geography = "California")
+
+# Remove the quotations below, if the value should be numeric instead of a character. 
+#_____ <- _____ %>% mutate(_____ = "_____")
+```
+
+Check if column names are the same across data frames. 
+
+```{r}
+#Uncomment the last line, and check to make sure the column names in each data frame are the same by filling in your data frame variables
+
+#all(colnames(df1) == colnames(df2))
+#all(colnames(_____) == colnames(_____))
+```
+
+Bind the data frames.
+
+```{r}
+#Uncomment the last line, and fill your data frame variable names. 
+
+#df_final <- rbind(df1, df2, df3)
+#_____ <- rbind(_____, _____, _____)
+```
+
+## Data Cleaning 
+
+### What is the structure of your dataset?
+
+**str()** gives us an overview of the structure of the dataset, including the number of observations, the variable names, and the format of each variable.  For instance, check out how we would run str() on the hospitals dataset. 
+
+```{r}
+str(hospitals)
+```
+
+Run this function for your own dataset. 
+```{r}
+#Uncomment the last line, and fill your data frame name.
+
+#str(df)
+
+#str(_____)
+```
+
+From running the code above, we can see that hospitals has 7581 rows in the dataset. How many rows are in your dataset?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+There was only one variable in the hospitals dataset that we may want to convert to a different type. At first glance you may think its COUNTY_FIPS, which loaded as a char even though it looks like a number. We in fact want to keep this a char. County FIPS IDs have two parts - the first two digits represent a census-standardized state code and the second three digits represent a census-standardized county code. Just like we expect 5-digits in a postal code, systems that reference this number expect a certain number of digits. However, state codes start at 1 and go up through 50+, as do county codes. To ensure that we always have five digits in the COUNTY FIPS, we need to ensure that leading zeros do not get stripped when we import our data. This would happen if the data imported a number, but won't happen if it gets imported as a char. With this in mind, we in fact going to want to transform ZIP into a char and add leading zeros. We will do this in a later step. See the code below to confirm why:
+```{r}
+hospitals %>%
+  filter(ZIP < 10000) %>%
+  select(NAME, ZIP) %>%
+  head(10)
+```
+See how the ZIP codes above are not five digits? This is because they imported as numbers and their leading zeros were stripped. 
+
+Check out the class of each variable (e.g. int, chr, num, logi) in your dataset. Are they all the correct type? List any variables that are not the correct type.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Do you have any variables in your dataset that should be numeric but are currently of type char? 
+
+If not, skip to the next heading. 
+
+This often happens when there are characters like commas, dollar signs, percent signs in the column. We need to strip these characters before converting the variable to numeric. 
+
+```{r}
+#Uncomment the last line, and fill your data frame name and the variable name you'd like to check. Copy and paste this line for each variable you need to check and fill accordingly. 
+
+#View(df$VARIABLE_NAME)
+#View(_____$_____)
+
+```
+
+Let's remove the characters that are appearing in this column with the gsub function, which replaces a character with another character - in this case with nothing. 
+
+```{r}
+#Uncomment the last line, and fill the unwanted character, your data frame name, and the variable name. Copy and paste this line for each variable for which you need to substitute a character and fill accordingly. 
+
+#df$VARIABLE_NAME <- gsub("UNWANTED CHARACTER", "", df$VARIABLE_NAME)
+#_____$_____ <- gsub("_____", "", _____$_____)
+```
+
+### Do you need to change the type of any variables (including the char to numeric conversion you prepared for above)?
+
+If not, skip to the next heading. 
+
+Let's go ahead and convert that numeric ZIP variable into a char. 
+```{r}
+hospitals$ZIP <- as.character(hospitals$ZIP) 
+```
+
+Following the same pattern, change the type of any incorrectly typed variables in your own dataset.
+```{r}
+#Uncomment the last line, and fill the appropriate conversion type, your data frame name, and the variable name. Copy and paste this line for each variable that you need to convert to a different type and fill accordingly.
+
+# df$VARIABLE_NAME <- as.numeric(df$VARIABLE_NAME) 
+
+# Fill with one of the following: as.numeric, as.character, as.logical)
+
+# _____$_____ <- _____(_____$______)
+```
+
+This will overwrite the values in that variable with the same values but in the correct format. If you have many, many columns that need to be converted, then we want to apply sapply here, which will perform a function for each value in a vector. Otherwise, skip the block below.
+
+```{r}
+#Uncomment the last line, and fill the appropriate data frame name and variable ranges. 
+
+#sapply(df[,[COLUMN_RANGE1:COLUMN_RANGE2]] function(x) as.numeric(x))
+#sapply(_____[,[_____:_____]] function(x) as.numeric(x))
+```
+
+### Do you need to add leading zeros to any values in your data?
+
+As described above, sometimes we need characters to values in our dataset for that value to be an exact number of digits. For instance, ZIP codes should be 5-digits long regardless of whether they start with the number 0. After we've converted such numeric values to a character, we can pad the front of the string with a certain character until the string is the required length. For the hospitals dataset, we will need to add leading zeros to the ZIP codes we just converted to characters until they are all 5 characters in length. We can use **str_pad()** to do this. 
+
+```{r}
+hospitals$ZIP <- str_pad(hospitals$ZIP, 5, pad = "0") 
+```
+
+If needed, do the same to a variable in your own dataset. 
+
+```{r}
+#Uncomment the last line, and fill the appropriate data frame, variable, and desired number of digits. 
+
+#df$VARIABLE_NAME <- str_pad(df$VARIABLE_NAME, [number of digits], pad = "0") 
+```
+
+### How are Null values represented in your dataset? 
+
+```{r}
+#Uncomment the last line, and fill in your data frame name to view the first ten rows of the data frame.
+
+#View(df[1:10,]) 
+
+#View(_____[1:10,]) 
+```
+
+Null values should appear as a greyed-out and italicized *NA*. This communicates to R that this is an empty field or that there is not data here. However, if not properly formatted, you may see Null values appear as:
+* "NULL" 
+* empty strings ("")
+* "NONE"
+* "NOT AVAILABLE"
+
+In the hospitals dataset, we can see by calling View() that empty data is filled with the string "NOT AVAILABLE". We want to convert such values to NA values. 
+
+```{r}
+is.na(hospitals) <- hospitals == "NOT AVAILABLE"
+```
+
+Where appropriate, convert values to NA in your own dataset. 
+```{r}
+#Uncomment the last line, and fill in your data frame name to view the first ten rows of the data frame.
+
+#is.na(df) <- df == "unwanted string"  
+
+#For example, if "NULL" appears in your dataset:
+#is.na(df) <- df == "NULL"
+
+#is.na(_____) <- _____ == "_____" 
+```
+
+### Do you have any dates in your dataset? (By this I mean specific dates, not just months or just years). 
+
+If not, skip to the next heading.
+
+Dates can be converted to a date format using the lubridate package. This is a package in the Tidyverse that makes it possible to extract specific information (such as month or year) from dates, and to compute with dates.
+
+The hospitals dataset has two date variables: SOURCEDATE and VAL_DATE. On import, they both have the following format: yyyy-mm-ddThh:mm:ss.000Z Because the format is in the year-month-day hour:minute:second format, we will call ymd_hms() on the variable.
+
+```{r}
+hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
+hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
+```
+
+If they were instead listed in the month-day-year hour:minute:second format, we would instead call mdy_hms() on the variable. 
+
+If they were just in the year-month-day format, we would instead call ymd() on the variable. 
+
+Check out the format of your date. Is it just a year? Just a month? A year, month, and day? Are there times listed? What order are each of these values listed in? [This link](https://lubridate.tidyverse.org/) will help you determine how to fill in the blank below.
+
+```{r}
+#Uncomment the last line, and fill the appropriate data frame name, variable name, and date format. 
+
+#df$VARIABLE_NAME <- date_format(df$VARIABLE_NAME)
+
+#For example, if the date is in month day, year (March 1, 1999) format:
+#df$VARIABLE_NAME <- mdy(df$VARIABLE_NAME) 
+
+#_____$_____ <- _____(_____$_____)   
+```
+
+### Do you foresee any other issues to working with your dataset? 
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+---
+
+## Data Exploration
+
+At this point in the assignment, we will begin exploring and getting to know your data. We will be learning a number of functions that are made available through dplyr - a package in the Tidyverse that enables us to manipulate and transform data. The five primary functions we will be working with through dplyr include:
+
+* select() : select variables
+* filter() : return only observations that meet a particular criteria
+* count() : count how many times each value appears in a variable
+* group_by() : group observations according to a common value
+* summarize() : perform an operation and return a single value
+
+### What kinds of variables are in the dataset?
+
+> Note that you may not be able to list three of each below. 
+
+*Nominal categorical variables* are variables that identify something else. They name or categorize something that exists in the world. Sometimes, nominal categorical variables are obvious. For instance, in the hospitals dataset, the hospital NAME is a nominal categorical variable - referring to the actual hospital. CITY is also a nomical categorical variable - referring to the hospital's city. The hospital TYPE and OWNER are all categorical variable - referring to specific categories the hospital is classed within. However, nominal categorical variables are not always strings. *Sometimes, numbers are considered nominal categorical variables.* For instance, a ZIP code is not a value that we operate on but instead refers to a certain place; it is a nominal categorical variable. In the hospitals dataset, the NAICS_CODE is a numeric reference to a particular industry classification; it is also a nominal categorical variable. Both OBJECTID and ID are nominal categorical variables referring to the hospital. 
+
+List three nominal categorical variables in your dataset. Use **select()** to select these variables in your dataset, and use **head(10)** to limit the display to the first 10 rows.
+```{r}
+#Uncomment the last line, and fill the appropriate data frame name and variable names.
+
+#df %>% select(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME3) %>% head(10)
+
+#Here are just a few of the nominal categorical variables in the hospitals dataset
+hospitals %>% select(OBJECTID, ID, NAME, COUNTY, NAICS_CODE, TYPE) %>% head(10)
+
+#_____ %>% select(_____, _____, _____) %>% head(10)
+
+```
+
+*Ordinal categorical variables* are categorical variables that can be ranked or placed in a particular order. For instance, 'High', 'Medium', and 'Low' have a particular order. In the hospitals dataset, there is one ordinal categorical variable - TRAUMA, which characterizes the hospital's trauma level designation. Trauma level designations indicate the extent of resources available at a hospital to deal with certain categories of trauma. It is most often broken into Level I through Level V. We can see how a data analyst may want to place trauma categories in a particular order (for instance, ordering hospitals from highest to lowest trauma levels). However, this is a particularly complictated categorical variable to work with. This is because Trauma levels are not defined according to a national standard. Instead, they are defined on a state-by-state basis, and our dataset spans all US states. Level II in one state might mean something different than Level II in another state despite both being labeled Level II in the dataset. Further, a single hospital can have multiple trauma levels (e.g. Level I Pediatric and Level II Adult). We would need to take all of this into consideration when comparing trauma levels across hospitals on a national scale.
+
+List three ordinal categorical variables in your dataset. Use **select()** to select these variables in your dataset, and use **head(10)** to limit the display to the first 10 rows. 
+```{r}
+#Uncomment the last line, and fill the appropriate data frame name and variable names.
+
+#df %>% select(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME3) %>% head(10)
+
+#Here is the only ordinal categorical variable in the hospitals dataset
+hospitals %>% select(TRAUMA) %>% head(10)
+
+#_____ %>% select(_____, _____, _____) %>% head(10)
+
+```
+
+*Discrete numeric variables* are numeric variables that represent something that is countable - the number of students in a classroom, the number pages in a book, the number of beds in a hospital. In the hospitals dataset, POPULATION, BEDS, and assumably TTL_STAFF (though it's all empty in our dataset), are all discrete numeric variables because they represent things that have been counted. 
+
+List three discrete numerical variables in your dataset. Use **select()** to select these variables in your dataset, and use **head(10)** to limit the display to the first 10 rows.
+```{r}
+#Uncomment the last line, and fill the appropriate data frame name and variable names.
+
+#df %>% select(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME3) %>% head(10)
+
+#Here are the discrete numeric variables in the hospitals dataset
+hospitals %>% select(POPULATION, BEDS, TTL_STAFF) %>% head(10)
+
+#_____ %>% select(_____, _____, _____) %>% head(10)
+
+```
+
+*Continuous numeric variables* are variables that would take an infinite amount of time to precisely count. You can think of these as variables in which it is always possible to measure the value more precisely. For instance, time would be considered a continuous numeric variable because time can be measured with infinite amount of specificity - hours > minutes > seconds > milliseconds > microseconds > nanoseconds ... and so on. Ruler measurements are also continuous because they can also be measured with infinite more precision. In the hospitals dataset, both latitude and longitude are continuous numeric variables as we can always measure them with more precision. 
+
+List three continuous numeric variables in your dataset. Use **select()** to select these variables in your dataset, and use **head(10)** to limit the display to the first 10 rows.
+```{r}
+#Uncomment the last line, and fill the appropriate data frame name and variable names.
+
+#df %>% select(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME3) %>% head(10)
+
+#Here are the continuous numeric variables in the hospitals dataset
+hospitals %>% select(LATITUDE, LONGITUDE) %>% head(10)
+
+#_____ %>% select(_____, _____, _____) %>% head(10)
+```
+
+### Summary
+
+> This section of the assignment is going to ask you to draw insights about your dataset after calling certain functions. When I ask you to draw an insight, I’m not asking you to describe what the function does or to state the results that you get. Instead I’m asking you to interpret those results and consider what this might tell us about the issues represented in the dataset or if it might signal issues of data quality. For instance, stating “the maximum value in the age column is 999,” is not an insight. Instead you should say, “the maximum value in the age column is 999, which is much higher than I would expect and may signal that the data was input wrong or that the data collectors at using 999 to represent null values.”
+
+Calling **summary()** on a data frame returns summary statistics for each of the variables in that data frame. For numeric values, it returns the min, max, median, 1st and 3rd quartiles, mean, and number of NAs. We will go over each of these values more in two weeks. 
+
+```{r}
+#df %>% summary()
+hospitals %>% summary()
+```
+
+One thing that should jump out at us right away in scanning the summary of the hospitals dataset is that the min for all of our discete numeric values is -999. How is it possible to count -999 beds? This signals to us that -999 is being used to indicate that data is not available. We can confirm this in the data dictionary. In fact, quite often -999 is used to indicate null values. Let's go ahead and convert all of the instances of -999 to NA.
+
+```{r}
+is.na(hospitals) <- hospitals == -999
+```
+
+Summarize the values in each variable in your data frame.
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame.
+#_____ %>% summary()
+
+#If you have a dataset with more than 20 columns, you can select which columns to run summary on using the following code:
+
+#df %>% select(VARIABLE_NAME1:VARIABLE_NAME20) %>% summary()
+#_____ %>% select(_____:_____) %>% summary()
+
+#or if the columns you would like to summarize are not consecutive, you can call:
+
+#df %>% select(c(VARIABLE_NAME1, VARIABLE_NAME5, VARIABLE_NAME20)) %>% summary()
+#_____ %>% select(c(_____, _____, _____)) %>% summary()
+```
+
+List three insights that you can draw from calling summary(). These insights may be conclusions that you immediately draw about something that is going on in your dataset or questions that you are left with. You may consider the range (from max to min) of numeric values in a particular column, the difference between the median and the mean, or the number of NAs that appear. Are you surprised at any of the values or do the numbers make sense?
+
+```{r eval=FALSE}
+1. 
+2.
+3.
+```
+
+Have you identified any areas where you may need to conduct more cleaning? Email me if you are unsure of how to address this issue. 
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### Values in a Key Categorical Variable
+
+**distinct()** lists each of the unique values that appears within a variable. This can be useful for determining how different issues are classified in the data. **n_distinct()** counts the number of distinct values in a variable. This let's us know how many categories we are dealing with. For instance, I can find out the distinct types of hospitals as well as how many distinct types there are by calling:
+
+```{r}
+#df %>% select(VARIABLE_NAME) %>% distinct()
+hospitals %>% select(TYPE) %>% distinct()
+#df %>% select(VARIABLE_NAME) %>% n_distinct()
+hospitals %>% select(TYPE) %>% n_distinct()
+```
+
+Often in ethnography, it is our job to take something that seems obvious or familiar to us and to question it as if it were strange. When running the function above, we may ask why values are categorized the way that they are - even if those categories seem obvious at first glance. 
+
+> For instance, in the hospitals dataset, we might ask why it is that we have separate categories for different types of hospitals. With just a bit of research, we find that there is rich history behind these hospital types. For instance, "critical access hospitals" was a designation created in 1997 to improve access to hospitals in rural parts of the US, following an almost two-decade long wave of hospital closures in rural communities. See this [source](https://www.ruralhealthinfo.org/topics/critical-access-hospitals). Psychiatric hospitals, while following a similar timeline to the development of general hospitals in the US, developed in response to changing attitudes and understandings of what it meant to be mentally ill. In the 18th century, mental illness was often considered a moral or spiritual shortcoming; however, the increased emphasis on *moral treatment* of mentally ill patients ushered in a new wave of insitutions and wards devoted to the treatment of such patients. See this [source](https://www.nursing.upenn.edu/nhhc/nurses-institutions-caring/history-of-psychiatric-hospitals/).
+
+Let's check a second variable in the hospitals dataset.
+
+```{r}
+#df %>% select(VARIABLE_NAME) %>% distinct()
+hospitals %>% select(OWNER) %>% distinct()
+#df %>% select(VARIABLE_NAME) %>% n_distinct()
+hospitals %>% select(OWNER) %>% n_distinct()
+```
+
+> Upon running this, we might ask why these different hospital business models exist. With just a bit of research, we can find a [history of hospital ownership](https://www.nursing.upenn.edu/nhhc/nurses-institutions-caring/history-of-hospitals/). From this history, we can see that a number of cultural, political, and economic forces has shaped hospital ownership models. In other words, these categories have a rich cultural history and tell us not only about our data, but also about the cultural context in which data gets enumerated. 
+
+Choose a categorical variable in your dataset to explore further. Be sure to select a variable in which the values represented in each row are likely to appear more than once. Select that variable and then call distinct() and n_distinct(). 
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame and categorical variable name.
+
+#Check the distinct values in the variable
+#_____ %>% select(_____) %>% distinct()
+
+#Check the number of distinct values in the variable
+#_____ %>% select(_____) %>% n_distinct()
+```
+
+Reflect on the categorization. How are the categories divided? Do any of the categories surprise you? Why? In what ways do the categories reflect a particular cultural moment? Conduct a bit of Web research in order to better understand why they are divided the way that they are. Be sure to cite your sources. 
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Repeat the steps above for a second categorical variable in your dataset. 
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame and categorical variable name.
+
+#Check the distinct values in the variable
+#_____ %>% select(_____) %>% distinct()
+
+#Check the number of distinct values in the variable
+#_____ %>% select(_____) %>% n_distinct()
+```
+
+Reflect on the categorization. How are the categories divided? Do any of the categories surprise you? Why? In what ways do the categories reflect a particular cultural moment? Conduct a bit of Web research in order to better understand why they are divided the way that they are. Be sure to cite your sources. 
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### NAs
+
+Check the number of NAs in each variable in your dataset by filling in the blanks in the commented code below.
+
+```{r}
+#colSums(sapply(df, is.na))
+colSums(sapply(hospitals, is.na))
+```
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame.
+#colSums(sapply(_____, is.na)) 
+```
+
+Let's explore a variable with many NAs. This is going to be the first time we see the function filter(). **filter()** subsets our data to the observations (or rows) that meet a certain criteria. Below, we will filter our data to those observations in which a certain variable is an NA. However, we can filter by a number of criteria; for instance, we can filter to those rows with a variable that:
+
+* equals a particular value: == "VALUE"
+* is less than a particular value: < VALUE
+* is greater than a particular value : > VALUE
+* is less than or equal to a particular value: <= VALUE
+* is greater than or equal to a particular value: >= VALUE
+* is one of a vector of values: %in% c(VALUE1, VALUE2)
+
+Here is how we filter data to the rows in which a certain variable is an NA. 
+
+```{r}
+#df %>% filter(is.na(VARIABLE_NAME)) %>% head(10) #We add head(10) to limit our output to the first ten rows
+hospitals %>% filter(is.na(BEDS)) %>% head(10)
+```
+
+If your dataset has no columns with NAs just note that below, and move on to 4. Otherwise, fill in the blanks below. 
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame and variable
+
+#_____ %>% filter(is.na(_____)) %>% head(10)
+```
+
+Is there anything special about these rows? What hypotheses do you have for why there may be missing data in the variable you selected? 
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+To confirm our hypotheses about NAs, we often have to apply additional filter conditions to the dataset. Let’s say that we hypothesize that there are missing values in a column because a certain geography didn’t report data; we may want to filter the dataset to the rows that represent that geography to see if any of the rows in the dataset have values listed.
+
+```{r}
+#df %>% filter(Country == "Luxembourg") 
+#...and then we would check to see if there are missing values in the columns under consideration. 
+```
+
+Or maybe we hypothesize that a certain geography did not report values in a certain year. We can join multiple filter conditions by placing an ‘&’ between two statements.
+
+```{r}
+#df %>% filter(Country == "Luxembourg" & Year == 2017) 
+#...and then we would check to see if there are missing values in the columns under consideration. 
+```
+
+Also note that we can filter to rows with all NAs in multiple columns by calling:
+
+```{r}
+#df %>% filter_at(vars(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME5:VARIABLE_NAME8), all_vars(is.na(.)))
+```
+
+And that we can filter to rows with any NAs in multiple columns by calling:
+
+```{r}
+#df %>% filter_at(vars(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME5:VARIABLE_NAME8), any_vars(is.na(.)))
+```
+
+For instance, I might check to see if the BEDS variable is NA at only hospitals whose STATUS is CLOSED or in observations that were sourced prior to 2017. 
+
+```{r}
+hospitals %>% filter(STATUS == "CLOSED") %>% select(NAME, BEDS)
+hospitals %>% filter(SOURCEDATE < as.Date("2017-01-01")) %>% select(NAME, BEDS) 
+
+#as.Date tells R to interpret a string as a date. With the lubridate library, a value will be considered less than (<) a date if it came before the date. 
+```
+
+For hospitals, both of these filters don't confirm a hypothesis. There are plenty of observations with BEDS for hospitals that are Closed, and also plenty of observations with BEDS listed prior to 2017. Sometimes there are context clues within the dataset as to why certain data is unavailable, and other times there are not. We don't have these context clues for missing values in BEDS in the hospitals dataset. It's likely that NAs in BEDS are simply there because the data aggregators couldn't find the data. 
+
+Apply a few additional filter conditions to test your hypothesis as to why there are missing values in the variable you selected. 
+
+```{r}
+#Apply filter conditions here. 
+```
+
+What did you learn from your applying your own filter conditions?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Does the data dictionary confirm your hypothesis? What does it say?
+ 
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+How might these missing values impact your data analysis? Why might it be important to remember that these values are missing as we move forward?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Summarize Filtered Categorical Data
+
+Since we learned above that one criteria for being designated as a Critical Access hospital is that the hospital must have 25 or fewer inpatient beds, we may want to see how the values for BEDS change when we filter to just those observations representing critical access hospitals. Below I will do this, select the BEDS variable, and call summary().
+
+```{r}
+#df %>% filter(CATEGORICAL_VARIABLE == "VALUE") %>% select(NUMERIC_VARIABLE) %>% summary() 
+hospitals %>% filter(TYPE == "CRITICAL ACCESS") %>% select(BEDS) %>% summary()
+```
+
+We can see that there are some hospitals in the US that have been designated as critical access hospitals that have more than 25 beds. Since this does not align with the criteria for critical access hospitals that we discovered in our research, it is likely something that we will want to investigate further.
+
+For your own dataset, select one of the values that you identified from calling distinct() on a categorical variable above. Filter the dataset to the rows representing that value, select a numeric variable to explore, and then call summary().
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame, variables, and value. 
+#_____ %>% filter(_____ == "_____") %>% select(_____) %>% summary()
+```
+
+What insight can you draw from calling summary() on your own filtered dataset?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Summarize Filtered Numeric Data
+
+We may also want to see which states have hospitals with more than 1500 beds. To do so, we would filter the data to those observations where BEDS is greater than 1500, and then we would check the distinct() STATES remaining in the data.
+
+```{r}
+#df %>% filter(NUMBERIC_VARIABLE > VALUE) %>% distinct(CATEGORICAL_VARIABLE)
+hospitals %>% filter(BEDS > 1500) %>% distinct(STATE)
+```
+From this exercise, we can see that only two states have hospitals with more than 1500 beds available. 
+
+Select a numeric variable in your dataset that represents the extent or scale of the issue you are studying. Pick a number that you believe serves as a good indicator that this issue is at a notable extent or scale, and filter the dataset to all the rows greater than (or less than) this number. Check the remaining distinct values in a categorical variable in the dataset. 
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame, variables, condition, and value. 
+#_____ %>% filter(_____ _____ _____) %>% distinct(_____)
+```
+
+What insight can you draw from calling distinct on the filtered data?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Group Common Values and Summarize
+
+Select a categorical variable that you would like to group your data by, so that you can summarize some statistics across each grouping. You may group your data by a particular year, by a particular location (such as a state or a region), or by a particular category. 
+
+**count()** counts the number of times each value appears in a variable. In other words, this function groups observations that share a common variable value and then counts the number of observations in each group. In the hospitals dataset, if I wanted to know the number of hospitals of each TYPE in the dataset, I would count by TYPE. Below we calculate the number of hospitals per state by counting by STATE. 
+
+```{r}
+#df %>% count(CATEGORICAL_VARIABLE)
+hospitals %>% count(STATE)
+```
+
+Select a variable in your dataset, and count the number of times each value appears in the variable (or, in other words, how many observations are associated with each value in that variable).
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame and variable. 
+#_____ %>% count(_____)
+```
+
+What insight can you draw from counting?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Sometimes, we want to do more than count the number of variables in each grouping. For instance, we may want to group the variables and then perform a calculation within each group. In such cases, we can call **group_by()** to aggregate the observations with common variable values into groups. Then we will call **summarize()** to perform a calculation within each of those groups. **summarize()** takes a set of values and a calculation method and returns a single value. For instance, if we call summarize() with a numeric column in our dataset and "mean" as a calcuation method, it will return the average of all the numeric values in that column. When called in conjunction with group_by(), it takes a set of values for each group and a calculation method and returns a single value for each group. 
+
+For the hospitals dataset, we will group the observations by STATE and then use summarize to calculate the sum of BEDS per state. 
+
+```{r}
+#df %>% group_by(CATEGORICAL_VARIABLE) %>% summarize(NEW_VARIABLE_NAME = sum(NUMBERIC_VARIABLE, na.rm = TRUE)) %>% ungroup()
+hospitals %>% group_by(STATE) %>% summarize(state_beds = sum(BEDS, na.rm = TRUE)) %>% ungroup()
+```
+
+Select a numeric variable in your dataset to summarize by the same variable that you counted above. For instance, you may want to sum the total number of reports in a given year, or find the average number of cases reported in a certain state. 
+
+```{r}
+#Uncomment the appropriate lines below, and fill in your data frame, variables, and summarize variable name, and math function. 
+#_____ %>% group_by(_____) %>% summarize(_____ = _____(_____, na.rm = TRUE)) %>% ungroup()
+```
+
+> Notice that I close each of these calls with **ungroup()**. When we group_by() a variable, any subsequent function calls will continue to be performed on the grouped data, unless we ungroup() it. This can be important if we want to filter to specific values after we summarize() the data. Assuming that we don't want to perform a filter operation within each group but on the entire new dataframe created after summarzing, we need to ungroup() the data before performing the filter() operation. In the function calls above, it is not as important to call ungroup() because we are not performing more functions after summarizing. However, I left the call in so that we can get in the habit of remembering to ungroup() when appropriate. 
+
+What insight can you draw from grouping and summarizing?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Combine any combination of the 5 verbs we learned in class this week (select, filter, group by, summarize, or count) to explore your dataset further. You may also use arrange, summary, or distinct. 
+
+```{r}
+#Fill your function here. 
+```
+
+What insight can you draw from running this function?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Combine any combination of the 5 verbs we learned in class this week (select, filter, group by, summarize, or count) to explore your dataset further. You may also use arrange, summary, or distinct. 
+
+```{r}
+#Fill your function here. 
+```
+
+What insight can you draw from running this function?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Combine any combination of the 5 verbs we learned in class this week (select, filter, group_by, summarize, or count) to explore your dataset further. You may also use arrange, summary, or distinct. 
+
+```{r}
+#Fill your function here. 
+```
+
+What insight can you draw from running this function?
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+
+## Other Useful Functions (This is only for reference.)
+
+### Add New Variables 
+
+**mutate()** creates a new variable in our dataset and fills it with a value produced from a formula that we provide. 
+
+```{r}
+#General format
+#df %>% mutate(NEW_VARIABLE_NAME = [FORMULA GOES HERE])
+
+#Some more specific examples
+#df %>% mutate(Total = VARIABLE_NAME1 + VARIABLE_NAME2 + VARIABLE_NAME3)
+#df %>% mutate(Difference = VARIABLE_NAME1 - VARIABLE_NAME2)
+#df %>% mutate(Average = VARIABLE_NAME1 + VARIABLE_NAME2 + VARIABLE_NAME3 / 3)
+#df %>% mutate(New_String = paste(VARIABLE_NAME1, VARIABLE_NAME2, sep=" ") Remember that we use paste to concatenate strings.
+
+#head() only displays the first six rows
+hospitals %>% mutate(BEDS_PER_POP = BEDS/POPULATION) %>% select(NAME, BEDS_PER_POP) %>% head(10)
+
+#Note running the function above will not permanently add the variable to the dataframe; it will only add it when you run the line above. If you want to permanently add the variable to the dataframe, you need to assign the function back to the dataframe variable like this:
+
+#df <- df %>% mutate(NEW_VARIABLE_NAME = [FORMULA GOES HERE])
+
+```
+
+### Sort Values
+
+**arrange()** sorts the values in a variable from smallest to largest. To sort from largest to smallest, we need call to arrange in descending order, using desc().
+
+```{r}
+#df %>% arrange(VARIABLE_NAME)
+#df %>% arrange(desc(VARIABLE_NAME))
+
+#head() only displays the first six rows
+hospitals %>% arrange(BEDS) %>% select(NAME, BEDS) %>% head(10)
+hospitals %>% arrange(desc(BEDS)) %>% select(NAME, BEDS) %>% head(10)
+```
+

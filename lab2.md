@@ -81,7 +81,8 @@ This will output:
 
 For more information about formatting documents in R Markdown see
 [this](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
-cheatsheet. Note how I created a hyperlink here\!
+cheatsheet. Note how I created a hyperlink
+here\!
 
 -----
 
@@ -93,19 +94,41 @@ cheatsheet. Note how I created a hyperlink here\!
 Fill response here. 
 ```
 
-### Why is this topic relevant to contemporary public health issues?
+### Why is this topic relevant to contemporary public health or social vulnerability in the wake of a disaster?
 
 ``` r
 Fill response here. 
 ```
 
-### What are my social-theoretical questions?
+*Empirical research questions* are questions that an analyst can assess
+evidence to address. Examples of social-theoretical questions include:
+
+  - Do United States hospitals have enough beds to accommodate the
+    expected influx in Covid-19 cases? At what point will there not be
+    enough beds available?
+  - In which states are hospitals better equipped with beds and staff to
+    take on an influx in
+patients?
+
+### What empirical research questions do I intend to address in my research? List at least two.
 
 ``` r
 Fill response here. 
 ```
 
-### What are my empirical research questions?
+*Social-Theoretical questions* are questions about how certain social,
+political, or environmental phenomena operate at a broad scale. We often
+cannot answer these questions with one research project. However, we
+often aim to increase understanding of these questions through a
+research project. Examples of social-theoretical questions include:
+
+  - How has the United States prioritized critical health
+    infrastructure?
+  - How do national hospital business models implicate social
+    vulnerability in the wake of a public health
+crisis?
+
+### What social-theoretical questions do I intend to address in my research? List at least two.
 
 ``` r
 Fill response here. 
@@ -132,6 +155,36 @@ Fill response here.
 ```
 
 ### What are the key sites, locations, or geographies relevant to this topic?
+
+``` r
+Fill response here. 
+```
+
+### What are social groups are impacted by this topic?
+
+``` r
+Fill response here. 
+```
+
+### How is the environment implicated in this topic?
+
+``` r
+Fill response here. 
+```
+
+### How is the economy implicated in this topic?
+
+``` r
+Fill response here. 
+```
+
+### How are politics implicated in this topic?
+
+``` r
+Fill response here. 
+```
+
+### How am I implicated in this topic?
 
 ``` r
 Fill response here. 
