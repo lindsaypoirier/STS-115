@@ -1,5 +1,5 @@
 ---
-title: "Lab 6 - Qunatitative Insights"
+title: "Lab 6 - Quantitative Insights"
 output: 
   github_document:
     toc: true
@@ -10,7 +10,7 @@ editor_options:
 
 ## Instructions and Overview
 
-In class, we have been discussing how to calculate and intepret measures of central tendency and measures of dispersion, as well as the consequences of relying on such numbers out of context to represent complex problems. This assignment will apply these ideas to your own dataset. To begin you will need to import and clean your dataset, and then you will follow the prompts while responding to short answer questions. Examples have been provided to support you throughout the process. At the end of the assignment, we will integrate some of your calculations into the Shiny application you started last week. 
+In class, we have been discussing how to calculate and interpret measures of central tendency and measures of dispersion, as well as the consequences of relying on such numbers out of context to represent complex problems. This assignment will apply these ideas to your own dataset. To begin you will need to import and clean your dataset, and then you will follow the prompts while responding to short answer questions. Examples have been provided to support you throughout the process. At the end of the assignment, we will integrate some of your calculations into the Shiny application you started last week. 
 
 ## Getting Started
 
@@ -23,17 +23,37 @@ library(shinydashboard)
 library(shinyWidgets)
 ```
 
-### Import your dataset
+### Import and clean example datasets 
 ```{r}
-setwd("/Users/lpoirier/Documents/GitHub/STS-115")
-hospitals <- read.csv("datasets/Hospitals.csv", stringsAsFactors = FALSE)
-  
-#Copy and paste relevant code from Lab 4 to import your data here. 
+hospitals <- read.csv("https://raw.githubusercontent.com/lindsaypoirier/STS-115/master/datasets/Hospitals.csv", stringsAsFactors = FALSE)
+
+cases <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
+
+#Do not worry about this line of code for now. Since the cases data gets appended every day with a new column representing that day's case counts, if we want the total cases per country, we need to add up all of the previous day's counts into a new column. The column below does this for us. 
+cases <- 
+  cases %>% 
+  mutate(Total.Cases = 
+           cases %>% 
+           select(starts_with("X")) %>% 
+           rowSums()
+         ) %>%
+  select(Province.State, Country.Region, Total.Cases)
+
+hospitals$ZIP <- as.character(hospitals$ZIP)
+
+hospitals$ZIP <- str_pad(hospitals$ZIP, 5, pad = "0") 
+
+is.na(hospitals) <- hospitals == "NOT AVAILABLE"
+is.na(hospitals) <- hospitals == -999
+is.na(cases) <- cases == ""
+
+hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
+hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
 ```
 
-### Clean your dataset
+### Import and clean your dataset. 
 ```{r}
-is.na(hospitals) <- hospitals == -999
+#Copy and paste relevant code from Lab 4 to import your data here. 
 
 #Copy and paste relevant code from Lab 4 to clean your data here. This includes any row binding, character removals, converions in variable type, date formatting, or NA conversions. 
 ```
@@ -44,7 +64,7 @@ A measure of central tendency is a single numeric quantity describing data by id
 
 ### Mean
 
-The most common measure of central tendency is a *mean* - the sum of a series of values divided by the number of values summed. This measure considers every value in a set of data and thus is a model of the entire set of data. Let's calculate the mean of a numeric variable in your dataset. 
+The most common measure of central tendency is a *mean* - the sum of a series of values divided by the number of values summed. This measure considers every value in a set of data and thus is a model of the entire set of data. Remember from lab four that we can do this with **summarize()** 
 
 ```{r}
 #df %>% summarize(mean_value = mean(NUMERIC_VARIABLE, na.rm = TRUE))
@@ -57,32 +77,45 @@ hospitals %>%
 
 > Note how we are choosing to ignore NA values above by calling na.rm = TRUE. When we do so, we need to keep in mind that we are not summarizing across all observations in the dataset, but only those for which there is a value listed in the variable we are operating on. Why might it be important to make communicate that we've made this move when we are presenting our data?
 
+Now, let's calculate the mean of a numeric variable in your dataset. 
+
+```{r}
+#Fill your code here. 
+```
+
 ### Median
 
-Another measure of central tendency considers to the middle value in a dataset; this is referred to as the *median*. Let's calculate the median of a numeric variable in your dataset. 
+Another measure of central tendency considers to the middle value in a dataset; this is referred to as the *median*. 
 
 ```{r}
 #df %>% summarize(median_value = median(NUMERIC_VARIABLE, na.rm = TRUE))
 
 hospitals %>% 
   summarize(median_value = median(BEDS, na.rm = TRUE))
+```
 
+Let's calculate the median of a numeric variable in your dataset. 
+
+```{r}
 #Fill your code here. 
 ```
 
 You'll notice in the hospitals dataset, there's a considerable difference between the mean and the median value. So which should we rely on to summarize the central location in our dataset? 
 
-We want to keep in mind that because the mean is a model of the entire dataset, it is easily influenced by outliers in the dataset, as well as a skewed distribution. When the distribution of values in a variable is normal, the mean and median of the dataset will be the same, because the values on either side of the middle value will be symmetrical. In other words, the distirbution will be balanced on either side of the median. Frequency plots gave us a good indication of the distribution of values the dataset. Create a frequency plot of the numeric variable you produced calculations of above. (You may have created this last week, and you may copy and paste it from the previous lab.)
+We want to keep in mind that because the mean is a model of the entire dataset, it is easily influenced by outliers in the dataset, as well as a skewed distribution. When the distribution of values in a variable is normal, the mean and median of the dataset will be the same because the values on either side of the middle value will be symmetrical. In other words, the distribution will be balanced on either side of the median. Frequency plots give us a good indication of the distribution of values the dataset. 
 
 ```{r fig.height=5, fig.width=10}
 hospitals %>% 
   ggplot(aes(x = BEDS)) +
   geom_freqpoly(binwidth = 10)
+```
+You'll notice in the hospitals dataset, the values of beds are significantly right-skewed. We can tell because the values represented on the plot are far from symmetrical. Instead, there is a long tail running to the right of the data, indicating that, while a considerable majority of hospitals have fewer than 500 beds available, there are at least a few hospitals that have up to 1600 beds available. In such cases, the mean is going to be significantly influenced by the larger values in the data even though there are far fewer. 
 
+Create a frequency plot of the numeric variable you produced calculations of above. (You may have created this last week, and you may copy and paste it from the previous lab.)
+
+```{r fig.height=5, fig.width=10}
 #Create a frequency plot here. 
 ```
-
-You'll notice in the hospitals dataset, the values of beds are significantly right-skewed. We can tell because the values represented on the plot are far from symmetrical. Instead, there is a long tail running to the right of the data, indicating that, while a considerable majority of hospitals have fewer than 500 beds available, there are at least a few hospitals that have up to 1600 beds available. In such cases, the mean is going to be significantly influenced by the larger values in the data even though there are far fewer. 
 
 Characterize the distribution of values in the frequency plot you created. Is it symmetrical or skewed?
 
@@ -96,13 +129,13 @@ When the values in a frequency plot are skewed to the left or the right, we ofte
 Fill your response here. 
 ```
 
-Charaterize the extent to which the value you selected as a measure of central tendency above is representative of your data. What story is told when we rely on this number as a summary of the data? If we were to use this single value to summarize this variable, what narratives would be left out?
+Characterize the extent to which the value you selected as a measure of central tendency above (mean or median) is representative of your data. What story is told when we rely on this number as a summary of the data? If we were to use this single value to summarize this variable, what narratives would be left out?
 
 ```{r eval=FALSE}
 Fill your response here. 
 ```
 
-Note that we can see all of the values we calculated above with the summary() function. Select another numeric variable in your dataset and call summary() on it.
+Note that we can see all of the values we calculated above with the summary() function we worked with in lab four. 
 
 ```{r}
 #df %>% select(NUMERIC_VARIABLE) %>% summary()
@@ -112,19 +145,25 @@ hospitals %>%
   summary()
 ```
 
+Select another numeric variable in your dataset and call summary() on it.
+
+```{r}
+#Fill your code here. 
+```
+
 What story do these calculations tell? Would you select the median or the mean as a measure of central tendency? Why?
 
 ```{r eval=FALSE}
 Fill your response here. 
 ```
 
-Charaterize the extent to which the value you selected as a measure of central tendency above is representative of your data. If we were to use this single value to summarize this variable, what narratives would be left out?
+Characterize the extent to which the value you selected as a measure of central tendency above is representative of your data. If we were to use this single value to summarize this variable, what narratives would be left out?
 
 ```{r eval=FALSE}
 Fill your response here. 
 ```
 
-As we've been discussing in class, any measure that we comprehend is guided in part by the way we have defined the phenomena we are measuring. How was the numeric variable that you selected defined? What is included in this definition, and what potentially relevant values are excluded?
+As we've been discussing in class, any measure that we calculate is mediated by the way the phenomena we are measuring gets defined. How was the numeric variable that you selected defined? What is included in this definition, and what potentially relevant values are excluded?
 
 ```{r eval=FALSE}
 Fill your response here. 
@@ -142,33 +181,30 @@ Measures of dispersion help us to understand how spread out the values in our da
 
 ### Ranges
 
-Select a numeric variable in your dataset and calculate the maximum value, the minimum value, and the range of values within that variable.
+We can also use summarize to find the max value, min value, and range of values in a numeric variable. 
 
 ```{r}
 #df %>% summarize(max_value = max(NUMERIC_VARIABLE, na.rm = TRUE))
-
 hospitals %>% 
   summarize(max_value = max(BEDS, na.rm = TRUE))
 
-#Fill your code here. 
-```
-
-```{r}
 #df %>% summarize(min_value = min(NUMERIC_VARIABLE, na.rm = TRUE))
-
 hospitals %>% 
   summarize(min_value = min(BEDS, na.rm = TRUE))
 
-#Fill your code here. 
-```
-
-```{r}
 #df %>% summarize(range = max(NUMERIC_VARIABLE, na.rm = TRUE) - min(NUMERIC_VARIABLE, na.rm = TRUE))
-
 hospitals %>% 
   summarize(range = max(BEDS, na.rm = TRUE) - min(BEDS, na.rm = TRUE))
+```
 
-#Fill your code here. 
+Select a numeric variable in your dataset and calculate the maximum value, the minimum value, and the range of values within that variable.
+
+```{r}
+#Fill your code to calculate max here. 
+
+#Fill your code to calculate min here. 
+
+#Fill your code to calculate range here. 
 ```
 
 Do the numbers surprise you? What insight can you draw from this calculation?
@@ -181,7 +217,7 @@ Fill your response here.
 
 Even though we are introducing the boxplot in relation to quartile deviation, it can be a tool for summarizing a number of quantitative insights in relation to a numerical variable in our dataset. Boxplots provide a visual representation of both measures of central tendency and measures of dispersion. The center line in a boxplot indicates the median of the dataset. The bottom of the box represents the 1st quartile - the value in the middle of the minimum and the median (or the the value at the 1st quarter position). The top of the box represents the 3rd quartile - the value in the middle of the median and the maximum (or the value at the 3rd quarter position). The whiskers include almost all of the data - indicating its range from minimum to maximum excluding outliers. The dots represent outliers. ggplot has a calculation for outliers that we need not go into in this course.
 
-The further the 1st and 3rd quartile are from the median (or, in other words, the wider the box), the greater the *quartile deviation.* In general, a narrower box and whiskers indicates less dispersion in the data, while a wider box and whiskers indicates greater dispersion. Let's create a boxplot for one of your numeric variables below. 
+The further the 1st and 3rd quartile are from the median (or, in other words, the wider the box), the greater the *quartile deviation.* In general, a narrower box and whiskers indicates less dispersion in the data, while a wider box and whiskers indicates greater dispersion.  
 
 ```{r fig.height=5, fig.width=5}
 #df %>% ggplot(aes(y = NUMERIC_VARIABLE)) + geom_boxplot() + theme_bw()
@@ -190,7 +226,11 @@ hospitals %>%
   ggplot(aes(y = BEDS)) +
   geom_boxplot() +
   theme_bw()
+```
 
+Let's create a boxplot for one of your numeric variables below.
+
+```{r fig.height=5, fig.width=5}
 #Fill your plot here. Be sure to add a title and labels to your plot. 
 ```
 
@@ -202,13 +242,25 @@ Fill your response here.
 
 ### Standard Deviation
 
-*Standard deviation* calculates the extent of concentration of values around the mean. A higher standard deviation indicates that values are more dispersed from the mean, and a lower standard deviation indicates that values are more concentrated around the mean. Let's calculate the standard deviation with your data. 
+*Standard deviation* calculates the extent of concentration of values around the mean. A higher standard deviation indicates that values are more dispersed from the mean, and a lower standard deviation indicates that values are more concentrated around the mean.  
 
 ```{r}
 #df %>% summarize(sd_value = sd(NUMERIC_VALUE, na.rm = TRUE))
 
 hospitals %>% 
   summarize(sd_value = sd(BEDS, na.rm = TRUE))
+
+cases %>% 
+  group_by(Country.Region) %>%
+  summarize(country_total = sum(Total.Cases, na.rm = TRUE)) %>%
+  ungroup() %>%
+  summarize(sd_value = sd(country_total, na.rm = TRUE))
+```
+
+Let's calculate the standard deviation with your data. Note that you may need to group_by(), summarize a total and then ungroup() to ensure that you are performing this calculation across values reported at the same scale.
+
+```{r}
+#Fill your code here.
 ```
 
 What insight can you draw from this calculation?
@@ -257,16 +309,19 @@ hospitals %>%
 ```
 
 Create a grouped boxplot for your dataset below.
+
 ```{r fig.height=5, fig.width=10}
 #Fill your code here. Add a title and labels to your plot. 
 ```
 
 Summarize what you learn from the plot. 
+
 ```{r eval=FALSE}
 Fill your response here. 
 ```
 
 How does the story that this grouped boxplot tells differ from the story told by the single boxplot you created above? Interpret why the story differs.
+
 ```{r eval=FALSE}
 Fill your response here. 
 ```
@@ -282,8 +337,6 @@ hospitals %>%
   theme_bw() + # To change the plot theme
   theme(axis.text.x = element_text(angle = 90, hjust=1)) + # To turn x-axis ticks 90 degrees
   scale_y_continuous(labels = scales::comma)  # To set x-axis ticks to comma notation
-
-
 ```
 
 We can apply functions other than median in stat_summary(). Let's graphically represent the total number of beds for each owner. 
@@ -297,7 +350,7 @@ hospitals %>%
   scale_y_continuous(labels = scales::comma)  # To set x-axis ticks to comma notation
 ```
 
-I can group these calculations further using the *fill* aesethetic. Below we create three plots by setting the fill aesthetic to the hospitals' TYPE. Depending on the *position* attribute, we can create either a stacked column plot, a dodged column plot, or a filled column plot (which shows proportions of totals versus actual totals. )
+I can group these calculations further using the *fill* aesthetic. Below we create three plots by setting the fill aesthetic to the hospitals' TYPE. Depending on the *position* attribute, we can create either a stacked column plot, a dodged column plot, or a filled column plot (which shows proportions of totals versus actual totals. )
 
 ```{r fig.height=5, fig.width=10}
 #Stacked column plot of the total hospital beds by owner and type

@@ -22,16 +22,38 @@ library(shiny)
 library(shinydashboard)
 ```
 
-### Import your dataset
+### Import and clean example datasets 
 ```{r}
-setwd("/Users/lpoirier/Documents/GitHub/STS-115")
-hospitals <- read.csv("datasets/Hospitals.csv", stringsAsFactors = FALSE)
-  
-#Copy and paste relevant code from Lab 4 to import your data here. 
+hospitals <- read.csv("https://raw.githubusercontent.com/lindsaypoirier/STS-115/master/datasets/Hospitals.csv", stringsAsFactors = FALSE)
+
+cases <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
+
+#Do not worry about this line of code for now. Since the cases data gets appended every day with a new column representing that day's case counts, if we want the total cases per country, we need to add up all of the previous day's counts into a new column. The column below does this for us. 
+cases <- 
+  cases %>% 
+  mutate(Total.Cases = 
+           cases %>% 
+           select(starts_with("X")) %>% 
+           rowSums()
+         ) %>%
+  select(Province.State, Country.Region, Total.Cases)
+
+hospitals$ZIP <- as.character(hospitals$ZIP)
+
+hospitals$ZIP <- str_pad(hospitals$ZIP, 5, pad = "0") 
+
+is.na(hospitals) <- hospitals == "NOT AVAILABLE"
+is.na(hospitals) <- hospitals == -999
+is.na(cases) <- cases == ""
+
+hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
+hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
 ```
 
-### Clean your dataset
+### Import and clean your dataset. 
 ```{r}
+#Copy and paste relevant code from Lab 4 to import your data here. 
+
 #Copy and paste relevant code from Lab 4 to clean your data here. This includes any row binding, character removals, converions in variable type, date formatting, or NA conversions. 
 ```
 
@@ -109,18 +131,19 @@ df %>% ggplot(aes(x = ages)) + geom_freqpoly(binwidth = 10)
 ### Some Helpful Tools to Adjust the Appearance of your Plot:
 
 ```{r fig.height=5, fig.width=10}
-covid_cases_per_country <- c(80967,41035,18407,18077,15320,14365,10995,8652,4222,3269,2460,2196,1795,1790,1439,1151,963,900,873,814,786,712,694,677,647,557,464,460,454,400,359,355,345,342,335,330,322,319,309,279,277,274,267,260,256,234,217,208,201,199,192,164,157,150,148,144,140,137,128,128,124,122,110,108,107,103,94,90,89,86,85,74,73,73,72,69,67,64,64,63,60,53,51,50,49,49,48,48,47,44,42,40,39,39,37,36,34,33,33,28,28,26,24,23,23,22,18,17,17,16,16,15,14,13,13,13,13,12,12,11,11,11,11,10,10,9,9,9,9,7,7,6,6,6,6,6,6,5,5,5,4,3,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-df <- data.frame(covid_cases_per_country)
-
 #Without formatting:
-df %>% 
-  ggplot(aes(x = covid_cases_per_country)) + 
-  geom_freqpoly(binwidth = 1000) 
+cases %>% 
+  group_by(Country.Region) %>%
+  summarize(country_total = sum(Total.Cases, na.rm = TRUE)) %>%
+  ggplot(aes(x = country_total)) + 
+  geom_freqpoly(binwidth = 10000) 
 
 #With formatting:
-df %>% 
-  ggplot(aes(x = covid_cases_per_country)) + 
-  geom_freqpoly(binwidth = 1000) +
+cases %>% 
+  group_by(Country.Region) %>%
+  summarize(country_total = sum(Total.Cases, na.rm = TRUE)) %>%
+  ggplot(aes(x = country_total)) + 
+  geom_freqpoly(binwidth = 10000) +
   labs(title = "Distribution of Covid-19 Case Loads as of March 19, 2020", x = "Number of Covid-19 Cases Recorded", y = "Count of Countries") + # To add titles and labels
   theme_bw() + # To change the plot theme
   theme(axis.text.x = element_text(angle = 90, hjust=1)) + # To turn x-axis ticks 90 degrees
@@ -306,7 +329,6 @@ What insight can you draw from this plot?
 Fill your response here. 
 ```
 
-
 ## Start a shiny app.
 
 At this point in the quarter, we are prepared to start piecing together a dashboard for displaying the data. Shiny Apps have two components - a front end (ui), and a backend (server). On the front end, we will be coding how we want our data displayed. **For this week, the only thing you need to do on the front end is fill in your title.** On the backend, we will be coding our data analysis. 
@@ -346,7 +368,6 @@ server <- function(input, output, session) {
   
 }
 ```
-
 
 ```{r}
 shinyApp(ui, server)

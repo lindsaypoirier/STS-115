@@ -23,19 +23,37 @@ library(shinydashboard)
 library(shinyWidgets)
 ```
 
-### Import your dataset
+### Import and clean example datasets 
 ```{r}
-setwd("/Users/lpoirier/Documents/GitHub/STS-115")
-hospitals <- read.csv("datasets/Hospitals.csv", stringsAsFactors = FALSE)
-  
-#Copy and paste relevant code from Lab 4 to import your data here. 
+hospitals <- read.csv("https://raw.githubusercontent.com/lindsaypoirier/STS-115/master/datasets/Hospitals.csv", stringsAsFactors = FALSE)
+
+cases <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
+
+#Do not worry about this line of code for now. Since the cases data gets appended every day with a new column representing that day's case counts, if we want the total cases per country, we need to add up all of the previous day's counts into a new column. The column below does this for us. 
+cases <- 
+  cases %>% 
+  mutate(Total.Cases = 
+           cases %>% 
+           select(starts_with("X")) %>% 
+           rowSums()
+         ) %>%
+  select(Province.State, Country.Region, Total.Cases)
+
+hospitals$ZIP <- as.character(hospitals$ZIP)
+
+hospitals$ZIP <- str_pad(hospitals$ZIP, 5, pad = "0") 
+
+is.na(hospitals) <- hospitals == "NOT AVAILABLE"
+is.na(hospitals) <- hospitals == -999
+is.na(cases) <- cases == ""
+
+hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
+hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
 ```
 
-### Clean your dataset
+### Import and clean your dataset. 
 ```{r}
-is.na(hospitals) <- hospitals == -999
-hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
-hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
+#Copy and paste relevant code from Lab 4 to import your data here. 
 
 #Copy and paste relevant code from Lab 4 to clean your data here. This includes any row binding, character removals, converions in variable type, date formatting, or NA conversions. 
 ```
@@ -44,7 +62,7 @@ hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
 
 To get us started in putting our data into context, we are going to look at some of the plots we produced in previous labs grouped according to a categorical variable in our dataset. 
 
-By *faceting* plots, we split them into a series of panels each representing the grouped data associated with a particular value in a categorical variable. Let's start with an easy example from our hospitals data - faceting a bar plot of the number of hosptials that have a helipad by state. 
+By *faceting* plots, we split them into a series of panels each representing the grouped data associated with a particular value in a categorical variable. Let's start with an easy example from our hospitals data - faceting a bar plot of the number of hospitals that have a helipad by state. 
 
 ```{r fig.height=5, fig.width=10}
 #df %>% ggplot(aes(x = CATEGORICAL_VARIABLE)) + geom_bar() + facet_wrap(~CATEGORICAL_VARIABLE)
@@ -94,9 +112,9 @@ hospitals %>%
         axis.text.y = element_text(size = 6),
         strip.text = element_text(size = 6)) 
 ```
-Faceting this plot by the year in which the data was sourced helps put the STATUS field into context. We can see that the vast majority of the data represented in the plot was sourced in 2018. We know that hospitals across the country are not open or closed in perpetuity, so we need to take the temporal context of the data into consideration when presenting our data. 
+Faceting this plot by the year in which the data was sourced helps put the STATUS field into context. We can see that the vast majority of the data represented in the plot was sourced in 2018. We know that hospitals across the country are not open or closed in perpetuity, so we need to take the temporal context of the data into consideration when presenting our results. 
 
-Copy and paste a plot from one of your previous labs and then copy it again and facet it by a geographic or temporal variable. 
+Copy and paste a plot from one of your previous labs. Then copy it again and facet it by a geographic or temporal variable. 
 
 ```{r fig.height=5, fig.width=10}
 #df %>% ggplot(aes(x = CATEGORICAL_VARIABLE)) + geom_bar() + facet_wrap(~CATEGORICAL_VARIABLE)
@@ -146,20 +164,47 @@ Fill your response here.
 
 ## The Importance of Place and Time
 
-Time and place often matter a great deal in how we interpret data. In this section, we will explore some of the pitfalls we need to avoid when generalizing data across geographies and across time. 
-
-A few examples to get us started:
+Time and place often matter a great deal in how we interpret data. To get us started in thinking about why, let's walk through a few examples:
 
 ### Case Study 1: Covid-19 Case Reporting by Country
 
+Let's take a look at the number of Covid-19 cases reported each day by each country. To do so, we will be reimporting the cases data as a time series - that is, as a dataset that reports the number of cases per day. When we import the data, every column will refer to a specific date and the case totals for that day will be the values stored in that column. 
+```{r}
+cases_time_series <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
+```
+
+When dates are stored as column names and not as values in and of themselves, it can be very difficult to manipulate the data based on dates. For an explanation of why this is, see: https://r4ds.had.co.nz/tidy-data.html The code below transforms this data into a tidy format. In other words, using **gather()**, we create a new row per province/country for every date column in the dataset and the totals associated with that date. Since R automatically places an "X" character in front of numeric column names, we remove that X character and then we transform the values into a date-time format. If you'd like to know more about this, I highly recommend the chapter in R for Data Science above. 
+
+```{r}
+cases_time_series <- cases_time_series %>% 
+  gather(key = "Case.Date", value = "Cases", -Province.State, -Country.Region, -Lat, -Long) %>%
+  mutate(Case.Date = str_remove(Case.Date, pattern = "X")) %>%
+  mutate(Case.Date = mdy(Case.Date))
+
+```
+
+Now let's plot the total number of cases reported each day, faceted by country. 
+
+```{r fig.height=8, fig.width=10}
+cases_time_series %>% 
+  ggplot(aes(x = Case.Date, y = Cases)) + 
+  stat_summary(geom = "col", fun.y = "sum") + 
+  facet_wrap(~Country.Region) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1, size = 6), 
+        axis.text.y = element_text(size = 6),
+        strip.text = element_text(size = 6)) 
+```
+
+One observation that might stand out in this plot is just how few cases were reported in Russia through mid-March. As of March 24, 2020, Russia had reported fewer than 500 cases of Covid-19. For a country covering more than 6 million square miles, with a population of 145 million, and in such close proximity to China where the case counts are highest, these numbers are surprisingly low. Russian officials have claimed that measures they took - such as shutting down the Russian border with China and setting up isolation zones for quarantined patients - have helped to keep the virus under control. However, several news reports have been published casting skepticism on the numbers, suggesting that in Russia there is a widespread culture against producing information that may draw negative international attention. To interpret this plot then, we need to have an understanding of global *geopolitics*. The numbers that we see reported in some parts of the world will vary from numbers reported in other parts of the world, not because the values are actually different, but because there are different cultures of reporting in certain countries. 
 
 ### Case Study 2: Calls to 311 during Hurricane Sandy
 
 > Further Reading: 
 
-311 is basically a customer service number for cities - a number for residents and visitors to report non-emergency issues, such as potholes and graffiti to city officials. In most cities, every call to 311 gets aggregated in a database, and increasingly, city officials are performing data analysis on the calls to figure out where certain issues in the city are concentrated. If they receive a number of calls about missed garbage pick-ups in a certain community, they may divert attention and resources there for improved sanitation. Often this data is publiclly accessible for communities to analyze.
+311 is basically a customer service number for cities - a number for residents and visitors to report non-emergency issues, such as potholes and graffiti to city officials. In most cities, every call to 311 gets aggregated in a database, and increasingly, city officials are performing data analysis on the calls to figure out where certain issues in the city are concentrated. If they receive a number of calls about missed garbage pick-ups in a certain community, they may divert attention and resources there for improved sanitation. Often this data is publicly accessible for communities to analyze.
 
-When Hurricane Sandy hit NYC in 2012, the City leveraged data about calls New Yorkers had made to 311 to track where a number of different issues were occuring. Visualizing data about 311 calls in the three months following the disaster indeed showed a spike in complaints about issues like damaged trees and lack of heat in apartment buildings throughout the city. Leveraging this data, the city was able to position the devastation of the disaster as episodic - a result of natural forces beyond their control. 
+When Hurricane Sandy hit NYC in 2012, the City leveraged data about calls New Yorkers had made to 311 to track where a number of different issues were occurring. Visualizing data about 311 calls in the three months following the disaster indeed showed a spike in complaints about issues like damaged trees and lack of heat in apartment buildings throughout the city. Leveraging this data, the city was able to position the devastation of the disaster as episodic - a result of natural forces beyond their control. 
 
 However, social researchers have argued that it is not so simple to delimit the temporal boundaries of a disaster. While a natural event may happen on a particular day or span of days, the structural conditions of the communities they impact have much longer timespans. Natural events occurring in delimited periods of time often exacerbate existing social issues like poverty, lack of affordable housing, and unequal access to healthcare. 
 
@@ -262,4 +307,54 @@ server <- function(input, output, session) {
 ```{r}
 shinyApp(ui, server)
 ```
+
+
+## Other Case Studies to Consider (I will continue to grow this list)
+
+### Case Study: Calls to 311 during Hurricane Sandy
+
+311 is basically a customer service number for cities - a number for residents and visitors to report non-emergency issues, such as potholes and graffiti to city officials. In most cities, every call to 311 gets aggregated in a database, and increasingly, city officials are performing data analysis on the calls to figure out where certain issues in the city are concentrated. If they receive a number of calls about missed garbage pick-ups in a certain community, they may divert attention and resources there for improved sanitation. Often this data is publicly accessible for communities to analyze. 
+
+```{r}
+nyc311 <- read.csv("", stringsAsFactors = FALSE)
+nyc311$Created.Date<-mdy_hms(nyc311$Created.Date)
+```
+
+When Hurricane Sandy hit NYC in 2012, the City leveraged data about calls New Yorkers had made to 311 to track where a number of different issues were occurring. Visualizing data about 311 calls in the three months following the disaster indeed showed a spike in complaints about issues like damaged trees and lack of heat in apartment buildings throughout the city. Leveraging this data, the city was able to position the devastation of the disaster as episodic - a result of natural forces beyond their control.
+
+```{r}
+nyc311 %>% 
+  filter(year(Created.Date) == 2012 & month(Created.Date) %in% c(7:11)) %>%
+  ggplot(aes(x = as.Date(Created.Date), group = 1)) +
+  geom_vline(xintercept=as.Date(c("2012-10-29")),linetype=4, colour="black") +
+  geom_line(stat="count") + 
+  facet_wrap(~Complaint.Type) + 
+  labs(x="Month", y="Count") +
+  scale_x_date() +
+  theme_bw() +
+  annotate(geom = "label", x = as.Date("2012-10-29"), y = 4000, label = "Hurricane Sandy", angle = 90)
+```
+
+However, social researchers have argued that it is not so simple to delimit the temporal boundaries of a disaster. While a natural event may happen on a particular day or span of days, the structural conditions of the communities they impact have much longer timespans. Natural events occurring in delimited periods of time often exacerbate existing social issues like poverty, lack of affordable housing, and unequal access to healthcare. 
+
+Let's zoom out on the 311 data to look at these issues over the course of years versus these three months.  Complaints to 311 about damaged trees do spike following most major natural events. However, complaints about lack of heat in apartments spike every year in October ...because in New York, that's when it gets cold. By only look at the data in months immediately after the disaster, the city could obscure the big picture - that poor New Yorkers face apartment negligence every year. The temporal context in which we analyze data matters a great deal for how we interpret it. 
+
+```{r fig.height=3, fig.width=10}
+nyc311 %>% 
+  ggplot(aes(x=as.Date(Created.Date), col=as.factor(year(Created.Date)), group = year(Created.Date))) +
+  geom_vline(xintercept=as.Date(c("2010-03-12","2010-09-16","2011-08-28","2011-10-29","2012-10-29")),linetype=4, colour="black") +
+  geom_line(stat = "count") + 
+  facet_wrap(~Complaint.Type) +
+  labs(x="Month", col="Year") +
+  scale_x_date(breaks = "3 months", labels=date_format("%b-%y")) +
+  theme_bw() +
+  annotate(geom = "label", x = as.Date("2010-03-12"), y = 4000, label = "nor'easter", angle = 90) +
+  annotate(geom = "label", x = as.Date("2010-09-16"), y = 4000, label = "tornadoes", angle = 90) +
+  annotate(geom = "label", x = as.Date("2011-08-28"), y = 4000, label = "Hurricane Irene", angle = 90) +
+  annotate(geom = "label", x = as.Date("2011-10-29"), y = 4500, label = "Halloween nor'easter", angle = 90) +
+  annotate(geom = "label", x = as.Date("2012-10-29"), y = 4000, label = "Hurricane Sandy", angle = 90)
+  #nor'easter, tornadoes, Irene, Halloween nor'easter, Sandy
+```
+
+> Liboiron, Max. 2015. “Disaster Data, Data Activism: Grassroots Responses to Representing Superstorm Sandy.” In Extreme Weather and Global Media, edited by Julia Leyda and Diane Negra. Taylor & Francis Group. https://doi.org/10.4324/9781315756486-7.
 
