@@ -366,14 +366,13 @@ shinyApp(ui, server)
 
 ## Other Case Studies to Consider (I will continue to grow this list)
 
-### Case Study: Calls to 311 during Hurricane Sandy
+### Case Study: Chrono-politics of Calls to 311 during Hurricane Sandy
 
 311 is basically a customer service number for cities - a number for residents and visitors to report non-emergency issues, such as potholes and graffiti to city officials. In most cities, every call to 311 gets aggregated in a database, and increasingly, city officials are performing data analysis on the calls to figure out where certain issues in the city are concentrated. If they receive a number of calls about missed garbage pick-ups in a certain community, they may divert attention and resources there for improved sanitation. Often this data is publicly accessible for communities to analyze. 
 
 ```{r}
-nyc311_zip <- unzip("https://github.com/lindsaypoirier/STS-115/blob/master/datasets/311_before_2015.csv.zip?raw=true")
-nyc311 <- read.csv(nyc311_zip, stringsAsFactors = FALSE) 
-nyc311$Created.Date<-mdy_hms(nyc311$Created.Date)
+library(scales)
+nyc311 <- read.csv("https://github.com/lindsaypoirier/STS-115/blob/master/datasets/311_before_2015.csv?raw=true", stringsAsFactors = FALSE) 
 ```
 
 When Hurricane Sandy hit NYC in 2012, the City leveraged data about calls New Yorkers had made to 311 to track where a number of different issues were occurring. Visualizing data about 311 calls in the three months following the disaster indeed showed a spike in complaints about issues like damaged trees and lack of heat in apartment buildings throughout the city. Leveraging this data, the city was able to position the devastation of the disaster as episodic - a result of natural forces beyond their control.
@@ -415,11 +414,6 @@ nyc311 %>%
 > Liboiron, Max. 2015. “Disaster Data, Data Activism: Grassroots Responses to Representing Superstorm Sandy.” In Extreme Weather and Global Media, edited by Julia Leyda and Diane Negra. Taylor & Francis Group. https://doi.org/10.4324/9781315756486-7.
 
 
-```{r}
-hospitals %>% 
-      filter(between(VAL_DATE, as.Date("2012-01-01"), as.Date("2019-01-01")))
 
-hospitals %>% 
-      filter(between(BEDS, 3, 5))
-```
+
 

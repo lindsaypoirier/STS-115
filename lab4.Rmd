@@ -726,6 +726,13 @@ Fill your response here.
 
 ### Group Common Values and Summarize
 
+```{r}
+cases %>%
+  group_by(Country.Region) %>%
+  summarize(Total.Cases = sum(Total.Cases, na.rm = TRUE)) %>%
+  ungroup()
+```
+
 Select a categorical variable that you would like to group your data by, so that you can summarize some statistics across each grouping. You may group your data by a particular year, by a particular location (such as a state or a region), or by a particular category. 
 
 **count()** counts the number of times each value appears in a variable. In other words, this function groups observations that share a common variable value and then counts the number of observations in each group. In the hospitals dataset, if I wanted to know the number of hospitals of each TYPE in the dataset, I would count by TYPE. Below we calculate the number of hospitals per state by counting by STATE. 
