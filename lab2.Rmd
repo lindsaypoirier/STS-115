@@ -145,7 +145,7 @@ Fill response here.
 Fill response here. 
 ```
 
-### What are social groups are impacted by this topic?
+### What social groups are impacted by this topic?
 
 ```{r eval=FALSE}
 Fill response here. 

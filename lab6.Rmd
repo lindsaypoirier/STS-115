@@ -10,7 +10,7 @@ editor_options:
 
 ## Instructions and Overview
 
-In class, we have been discussing how to calculate and interpret measures of central tendency and measures of dispersion, as well as the consequences of relying on such numbers out of context to represent complex problems. This assignment will apply these ideas to your own dataset. To begin you will need to import and clean your dataset, and then you will follow the prompts while responding to short answer questions. Examples have been provided to support you throughout the process. At the end of the assignment, we will integrate some of your calculations into the Shiny application you started last week. 
+In this lab, we will practice calculating and interpreting measures of central tendency and measures of dispersion, as well as the consequences of relying on such numbers out of context to represent complex problems. To begin you will need to import and clean your dataset, and then you will follow the prompts while responding to short answer questions. Examples have been provided to support you throughout the process. At the end of the assignment, we will integrate some of your calculations into the Shiny application you started last week. 
 
 ## Getting Started
 
@@ -422,10 +422,10 @@ ui <- dashboardPage(
       infoBoxOutput("value1", width = 4),
       infoBoxOutput("value2", width = 4),
       infoBoxOutput("value3", width = 4),
-      plotOutput("plot1"),
-      plotOutput("plot2"),
-      plotOutput("plot3"),
-      plotOutput("plot4")
+      box(plotOutput("plot1")),
+      box(plotOutput("plot2")),
+      box(plotOutput("plot3")),
+      box(plotOutput("plot4"))
   )
 )
   

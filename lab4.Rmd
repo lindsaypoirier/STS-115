@@ -71,6 +71,8 @@ I have made the hospitals dataset that we will be working with as an example thr
 ```{r}
 hospitals <- read.csv("https://raw.githubusercontent.com/lindsaypoirier/STS-115/master/datasets/Hospitals.csv", stringsAsFactors = FALSE)
 
+world_health_econ <- read.csv("", stringsAsFactors = FALSE)
+
 cases <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
 
 #Do not worry about this line of code for now. Since the cases data gets appended every day with a new column representing that day's case counts, if we want the total cases per country, we need to add up all of the previous day's counts into a new column. The column below does this for us. 
@@ -144,7 +146,7 @@ Bind the data frames.
 
 ### What is the structure of your dataset?
 
-**str()** gives us an overview of the structure of the dataset, including the number of observations, the variable names, and the format of each variable.  For instance, check out how we would run str() on the hospitals dataset. 
+**str()** gives us an overview of the structure of the dataset, including the number of observations, the variable names, and each variable's type.  For instance, check out how we would run str() on the hospitals dataset. 
 
 ```{r}
 str(hospitals)
@@ -159,13 +161,27 @@ Run this function for your own dataset.
 #str(_____)
 ```
 
-From running the code above, we can see that hospitals has 7581 rows in the dataset. How many rows are in your dataset?
+### Are any of the variables in your dataset incorrectly data typed?
 
-```{r eval=FALSE}
-Fill your response here. 
+In R, the basic data types include: 
+
+* numeric: numbers that may contain decimals
+* integer: whole numbers
+* character: characters 
+* logical: TRUE/FALSE
+* complex: complex numbers
+
+When we call str(), we can see the data type of variable in the dataset. 
+
+We can check the type of a variable as follows:
+```{r}
+#typeof(df$VARIABLE_NAME)
+
+typeof(hospitals$ID)
 ```
 
-There was only one variable in the hospitals dataset that we may want to convert to a different type. At first glance you may think its COUNTY_FIPS, which loaded as a char even though it looks like a number. We in fact want to keep this a char. County FIPS IDs have two parts - the first two digits represent a census-standardized state code and the second three digits represent a census-standardized county code. Just like we expect 5-digits in a postal code, systems that reference this number expect a certain number of digits. However, state codes start at 1 and go up through 50+, as do county codes. To ensure that we always have five digits in the COUNTY FIPS, we need to ensure that leading zeros do not get stripped when we import our data. This would happen if the data imported a number, but won't happen if it gets imported as a char. With this in mind, we in fact going to want to transform ZIP into a char and add leading zeros. We will do this in a later step. See the code below to confirm why:
+There was only one variable in the hospitals dataset that we may want to convert to a different type. At first glance you may think its COUNTY_FIPS, which loaded as a character even though it looks like a number. We in fact want to keep this a char. County FIPS IDs have two parts - the first two digits represent a census-standardized state code and the second three digits represent a census-standardized county code. Just like we expect 5-digits in a postal code, systems that reference this number expect a certain number of digits. However, state codes start at 1 and go up through 50+, as do county codes. To ensure that we always have five digits in the COUNTY FIPS, we need to ensure that leading zeros do not get stripped when we import our data. This would happen if the data imported a number, but won't happen if it gets imported as a char. With this in mind, we in fact going to want to transform ZIP into a char and add leading zeros. We will do this in a later step. See the code below to confirm why:
+
 ```{r}
 hospitals %>%
   filter(ZIP < 10000) %>%
@@ -174,7 +190,7 @@ hospitals %>%
 ```
 See how the ZIP codes above are not five digits? This is because they imported as numbers and their leading zeros were stripped. 
 
-Check out the class of each variable (e.g. int, chr, num, logi) in your dataset. Are they all the correct type? List any variables that are not the correct type.
+Check out the data type of each variable (e.g. int, chr, num, logi) in your dataset. Are they all the correct type? List any variables that are not the correct type.
 
 ```{r eval=FALSE}
 Fill your response here. 
@@ -203,7 +219,7 @@ Let's remove the characters that are appearing in this column with the gsub func
 #_____$_____ <- gsub("_____", "", _____$_____)
 ```
 
-### Do you need to change the type of any variables (including the char to numeric conversion you prepared for above)?
+### Do you need to change the data type of any variables (including the char to numeric conversion you prepared for above)?
 
 If not, skip to the next heading. 
 
@@ -258,7 +274,7 @@ If needed, do the same to a variable in your own dataset.
 #View(_____[1:10,]) 
 ```
 
-Null values should appear as a greyed-out and italicized *NA*. This communicates to R that this is an empty field or that there is not data here. However, if not properly formatted, you may see Null values appear as:
+Null values should appear as a greyed-out and italicized *NA* (Not Available). This communicates to R that this is an empty value or, in other words, that there is not data here. However, if not properly formatted when we import the dataset, you may see Null values appear as:
 * "NULL" 
 * empty strings ("")
 * "NONE"
@@ -325,13 +341,14 @@ Fill your response here.
 
 ## Data Exploration
 
-At this point in the assignment, we will begin exploring and getting to know your data. We will be learning a number of functions that are made available through dplyr - a package in the Tidyverse that enables us to manipulate and transform data. The five primary functions we will be working with through dplyr include:
+At this point in the assignment, we will begin exploring and getting to know your data. We will be learning a number of functions that are made available through dplyr - a package in the Tidyverse that enables us to manipulate and transform data. The four primary functions we will be working with this week and next through dplyr include:
 
 * select() : select variables
 * filter() : return only observations that meet a particular criteria
-* count() : count how many times each value appears in a variable
 * group_by() : group observations according to a common value
 * summarize() : perform an operation and return a single value
+
+In this lab, we will focus on the first two - select() and filter(). You can think of select() as a tool to reference specific columns in a rectangular dataset, and filter() as a tool to reference specific rows in a rectangular dataset. 
 
 ### What kinds of variables are in the dataset?
 
@@ -398,7 +415,25 @@ hospitals %>% select(LATITUDE, LONGITUDE) %>% head(10)
 
 ### What makes each observation in your dataset unique?
 
-An important first step to working with a rectangular dataset is identifying a variable or set of variables than can serve as a unique key for the data. A *unique key* is a variable (or set of variables) that uniquely identifies an observation in the dataset. Think of a unique key as a way to identify a row and all of the values in it. There should never be more than one row with the same unique key.
+In starting our data analysis, we need to have a good sense of what each observation in our dataset refers to - or its *observational unit*. Think of it this way. If you were to count the number rows in your dataset, what would that number refer to? 
+
+> To create this statement, we will use the R function **paste()**. paste() allows you to create strings that concatenate strings that you provide with other values. We separate all of the components of the string we wish to paste together with commas. 
+
+```{r}
+paste("I have", nrow(hospitals), "unique _____ represented in my dataset.")
+paste("I have", nrow(cases), "unique _____ represented in my dataset.")
+
+```
+
+Get this statement started for your dataset:
+
+```{r}
+#Uncomment the last line and fill your data frame name in nrow.
+
+#paste("I have", nrow(_____), "unique _____ represented in my dataset.")
+```
+
+To figure out how to fill that blank in the statement, it is often useful to identify a variable or set of variables that can serve as a unique key for the data. A *unique key* is a variable (or set of variables) that uniquely identifies an observation in the dataset. Think of a unique key as a unique way to identify a row and all of the values in it. There should never be more than one row in the dataset with the same unique key. A unique key tells us what each row in the dataset refers to. 
 
 In the hospitals dataset, the unique key is a bit more obvious. There is a variable called OBJECTID that uniquely refers to the geographic coordinates in the dataset, and there is a variable called ID that uniquely refers to the hospital in the dataset. We can confirm that these are indeed unique keys by counting the number of **distinct()** (or non-repeating) values in this variable and making sure it is equal to the number of rows in the entire dataset. If the distinct values in the variable is equal to the number of rows in the dataset, then we know that the key never repeats and that it can uniquely identify each row. 
 
@@ -416,11 +451,15 @@ n_rows <- nrow(hospitals)
 n_unique_keys == n_rows
 ```
 
-The ID field refers to a hospital so in this dataset a hospital is what makes each observation unique. 
+Since the ID field refers to a specific hospital, in this dataset a hospital is what makes each observation unique. In other words, the dataset's observation unit is a hospital. Now you can confidently say:
+
+```{r}
+paste("I have", nrow(hospitals), "unique hospitals represented in my dataset.")
+```
 
 > Note that NAME is typically not an appropriate variable to use as a unique key. Let me provide an example to demonstrate this. When I worked for BetaNYC, I was trying to build a map of vacant storefronts in NYC by mapping all commercially zoned properties in the city, and then filtering out those properties where a business was licensed or permitted. This way the map would only include properties where there wasn't a business operating. One set of businesses I was filtering out was restaurants. The only dataset that the city had made publicly available for restaurant permits was broken. It was operating on an automated process to update whenever there was a change in the permit; however, whenever a permit was updated, rather than updating the appropriate fields in the existing dataset, it was creating a new row in the dataset that only included the permit holder (the restaurant name), the permit type, and the updated fields. Notably the unique permit ID was not being included in this new row. We pointed this issue out to city officials, but fixing something like this can be slow and time-consuming, so in the meantime, we looked into whether we could clean the data ourselves by aggregating the rows that referred to the same restaurant. However, without the permit ID it was impossible to uniquely identify the restaurants in the dataset. Sure, we had the restaurant name, but do you know how many Wendy's there are in NYC?
 
-In the cases dataset, the unique ID is less obvious. Because there are multiple provinces listed for each country (but not for all countries), we can't rely on country to uniquely identify each row. 
+In the cases dataset, the unique ID is less obvious. Because there are multiple provinces listed for each country (but not for all countries), we can't rely on country to uniquely identify each row. See below:
 ```{r}
 # Count the distinct values in your unique key
 n_unique_keys <- 
@@ -434,8 +473,9 @@ n_rows <- nrow(cases)
 # Make sure these numbers are equal
 n_unique_keys == n_rows
 ```
-Instead, we need to rely on both the country and province to uniquely identify each row. 
+Because this returns FALSE, it would be incorrect to say "I have nrow(df) many unique countries in my dataset."
 
+Instead, we need to rely on both the country and province to uniquely identify each row. 
 ```{r}
 # Count the distinct values in your unique key
 n_unique_keys <- 
@@ -449,17 +489,15 @@ n_rows <- nrow(cases)
 # Make sure these numbers are equal
 n_unique_keys == n_rows
 ```
+In this case, every row in the dataset is a province and country pair. In other words, the dataset's observational unit is a province/country. Now you can confidently say:
+
+```{r}
+paste("I have", nrow(cases), "unique province/countries represented in my dataset.")
+```
 
 Why is this so important? Later we are going to perform calculations across observations in the dataset. When we do so, we assume that all of the observations in the dataset are reported at the same scale. For instance, imagine if we want to know the average number of Covid-19 cases reported across the globe. Before we take the average of all the values reported in the Total.Cases column of the cases dataset, we need to remember that some cases are reported at just the country scale and some are reported at the more specific province scale. We would need to transform our data so that each observation represented a country total before taking this average, or else we would be averaging data at different geographic scales. 
 
-What makes each observation in your dataset unique?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-Confirm that you are correct below. 
-
+What variable makes each observation in your dataset unique? Confirm that you are correct below. 
 ```{r}
 # Uncomment and count the distinct values in your unique key
 #n_unique_keys <- _____ %>% select(_____) %>% n_distinct()
@@ -471,9 +509,47 @@ Confirm that you are correct below.
 # n_unique_keys == n_rows
 ```
 
-### Summary
+What does your unique key refer to? In other words, what is the observational unit of your dataset?
+```{r eval=FALSE}
+Fill your response here. 
+```
 
-> This section of the assignment is going to ask you to draw insights about your dataset after calling certain functions. When I ask you to draw an insight, I’m not asking you to describe what the function does or to state the results that you get. Instead I’m asking you to interpret those results and consider what this might tell us about the issues represented in the dataset or if it might signal issues of data quality. For instance, stating “the maximum value in the age column is 999,” is not an insight. Instead you should say, “the maximum value in the age column is 999, which is much higher than I would expect and may signal that the data was input wrong or that the data collectors at using 999 to represent null values.”
+Fill in the statement below, and make sure that it makes sense with your data. 
+```{r}
+#Uncomment the line below and fill in the blanks.
+
+#paste("I have", nrow(_____), "unique _____ represented in my dataset.")
+```
+
+Anytime we count something in the world, we are not only engaging in a process of tabulation; we are also engaged in a process of defining. If I count the number of students in class, I first have to define what counts as a student. If someone is auditing the class, do they count? If as the teacher am learning from my students, do I count myself as a student? As I make decisions about how I'm going to define "student," those decisions impact the numbers that I produce. When I change my definition of "student," how I go about tabulating students also changes. 
+
+Thus, as we prepare to count observations in a dataset, it is important to know how those observations are defined. When I say that there are 7581 hospitals in the hospitals dataset, this number does not mean much until I understand how hospitals were defined in the dataset. Which hospitals? In what part of the world? From what time period? Are hospitals that were once open and are now closed included? Are psychiatric hospitals included, or only medical hospitals? Are nursing homes included? Who gets to decide what counts as a hospital? 
+
+Analyzing the hospitals [data documentation](https://hifld-geoplatform.opendata.arcgis.com/datasets/6ac5e325468c4cb9b905f1728d6fbf0f_0), we find the following statement:
+"This feature class/shapefile contains locations of Hospitals for 50 US states, Washington D.C., US territories of Puerto Rico, Guam, American Samoa, Northern Mariana Islands, Palau, and Virgin Islands.The dataset only includes hospital facilities based on data acquired from various state departments or federal sources which has been referenced in the SOURCE field. Hospital facilities which do not occur in these sources will be not present in the database....The database does not contain nursing homes or health centers."
+
+Knowing how hospitals are defined helps us put the count of hospitals in our dataset into context.
+
+Consider the cases dataset. Throughout the world, due to competing geopolitics, different countries draw geographic borders and name countries differently. For instance, while the United Nations and many other countries recognize 'Myanmar' as the official name of the southeast-Asian country (after a ruling military junta declared the name change in 1989), the US and the UK refer to the country as 'Burma', arguing that official country name changes should be based on a democratic process. The borders between Israel, Syria, Lebanon, and Palestine are constantly in dispute as political processes and religious factions clash. Check out this long list of [territorial disputes](https://en.wikipedia.org/wiki/List_of_territorial_disputes_. So, how are countries and provinces defined in the cases dataset?
+
+When the data was first released, the Johns Hopkins team producing this dataset were not following a particular naming standard for countries. Check out [this issue](https://github.com/CSSEGISandData/COVID-19/issues/340) in their GitHub issue queue. Several community members requested that the [ISO 3166-2](https://www.iso.org/iso-3166-country-codes.html) country codes be added to the dataset. ISO 3166-2 country codes are numbers standardized by the International Standards Organization for uniquely referring to each country or subdivision; each code corresponds to a country or region recognized by the United Nations. You can keep track of how this issue is progressing [here](https://github.com/CSSEGISandData/COVID-19/issues/372). In this sense, the definitions of provinces/countries is evolving in the dataset - and notably evolving towards standardized definitions recognized by the UN. 
+
+> Note that one of issue that has come up with making this change is what to do about the row in the dataset representing the number of cases on the Princess Cruise.
+
+How are the observational units in your dataset defined? Be sure to refer to the data documentation. 
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+Who or what organization manages these definitions? In other words, who gets to decide what counts in this data? 
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+
+### Summary
 
 Calling **summary()** on a data frame returns summary statistics for each of the variables in that data frame. For numeric values, it returns the min, max, median, 1st and 3rd quartiles, mean, and number of NAs. We will go over each of these values more in two weeks. Plus, we have a lot more work to do before we can take any of these numbers at face value. At this point, we are simply looking for values that immediately appear off. 
 
@@ -523,7 +599,7 @@ hospitals %>% select(TYPE) %>% n_distinct()
 
 Often in ethnography, it is our job to take something that seems obvious or familiar to us and to question it as if it were strange. When running the function above, we may ask why values are categorized the way that they are - even if those categories seem obvious at first glance. 
 
-> For instance, in the hospitals dataset, we might ask why it is that we have separate categories for different types of hospitals. With just a bit of research, we find that there is rich history behind these hospital types. For instance, "critical access hospitals" was a designation created in 1997 to improve access to hospitals in rural parts of the US, following an almost two-decade long wave of hospital closures in rural communities. See this [source](https://www.ruralhealthinfo.org/topics/critical-access-hospitals). Psychiatric hospitals, while following a similar timeline to the development of general hospitals in the US, developed in response to changing attitudes and understandings of what it meant to be mentally ill. In the 18th century, mental illness was often considered a moral or spiritual shortcoming; however, the increased emphasis on *moral treatment* of mentally ill patients ushered in a new wave of institutions and wards devoted to the treatment of such patients. See this [source](https://www.nursing.upenn.edu/nhhc/nurses-institutions-caring/history-of-psychiatric-hospitals/).
+> For instance, in the hospitals dataset, we might ask why it is that we have separate categories for different types of hospitals. With just a bit of research, we find that there is rich history behind these hospital types. For instance, "critical access hospitals" was a designation created in 1997 to improve access to hospitals in rural parts of the US, following an almost two-decade long wave of hospital closures in rural communities. To receive federal funding, critical access hospitals should have no more than 25 beds. See this [source](https://www.ruralhealthinfo.org/topics/critical-access-hospitals). Psychiatric hospitals, while following a similar timeline to the development of general hospitals in the US, developed in response to changing attitudes and understandings of what it meant to be mentally ill. In the 18th century, mental illness was often considered a moral or spiritual shortcoming; however, the increased emphasis on *moral treatment* of mentally ill patients ushered in a new wave of institutions and wards devoted to the treatment of such patients. See this [source](https://www.nursing.upenn.edu/nhhc/nurses-institutions-caring/history-of-psychiatric-hospitals/).
 
 Let's check a second variable in the hospitals dataset.
 
@@ -677,146 +753,7 @@ How might these missing values impact your data analysis? Why might it be import
 Fill your response here. 
 ```
 
-### Summarize Filtered Categorical Data
-
-Since we learned above that one criteria for being designated as a Critical Access hospital is that the hospital must have 25 or fewer inpatient beds, we may want to see how the values for BEDS change when we filter to just those observations representing critical access hospitals. Below I will do this, select the BEDS variable, and call summary().
-
-```{r}
-#df %>% filter(CATEGORICAL_VARIABLE == "VALUE") %>% select(NUMERIC_VARIABLE) %>% summary() 
-hospitals %>% filter(TYPE == "CRITICAL ACCESS") %>% select(BEDS) %>% summary()
-```
-
-We can see that there are some hospitals in the US that have been designated as critical access hospitals that have more than 25 beds. Since this does not align with the criteria for critical access hospitals that we discovered in our research, it is likely something that we will want to investigate further.
-
-For your own dataset, select one of the values that you identified from calling distinct() on a categorical variable above. Filter the dataset to the rows representing that value, select a numeric variable to explore, and then call summary().
-
-```{r}
-#Uncomment the appropriate lines below, and fill in your data frame, variables, and value. 
-#_____ %>% filter(_____ == "_____") %>% select(_____) %>% summary()
-```
-
-What insight can you draw from calling summary() on your own filtered dataset?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-### Summarize Filtered Numeric Data
-
-We may also want to see which states have hospitals with more than 1500 beds. To do so, we would filter the data to those observations where BEDS is greater than 1500, and then we would check the distinct() STATES remaining in the data.
-
-```{r}
-#df %>% filter(NUMBERIC_VARIABLE > VALUE) %>% distinct(CATEGORICAL_VARIABLE)
-hospitals %>% filter(BEDS > 1500) %>% distinct(STATE)
-```
-From this exercise, we can see that only two states have hospitals with more than 1500 beds available. 
-
-Select a numeric variable in your dataset that represents the extent or scale of the issue you are studying. Pick a number that you believe serves as a good indicator that this issue is at a notable extent or scale, and filter the dataset to all the rows greater than (or less than) this number. Check the remaining distinct values in a categorical variable in the dataset. 
-
-```{r}
-#Uncomment the appropriate lines below, and fill in your data frame, variables, condition, and value. 
-#_____ %>% filter(_____ _____ _____) %>% distinct(_____)
-```
-
-What insight can you draw from calling distinct on the filtered data?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-### Group Common Values and Summarize
-
-```{r}
-cases %>%
-  group_by(Country.Region) %>%
-  summarize(Total.Cases = sum(Total.Cases, na.rm = TRUE)) %>%
-  ungroup()
-```
-
-Select a categorical variable that you would like to group your data by, so that you can summarize some statistics across each grouping. You may group your data by a particular year, by a particular location (such as a state or a region), or by a particular category. 
-
-**count()** counts the number of times each value appears in a variable. In other words, this function groups observations that share a common variable value and then counts the number of observations in each group. In the hospitals dataset, if I wanted to know the number of hospitals of each TYPE in the dataset, I would count by TYPE. Below we calculate the number of hospitals per state by counting by STATE. 
-
-```{r}
-#df %>% count(CATEGORICAL_VARIABLE)
-hospitals %>% count(STATE)
-```
-
-Select a variable in your dataset, and count the number of times each value appears in the variable (or, in other words, how many observations are associated with each value in that variable).
-
-```{r}
-#Uncomment the appropriate lines below, and fill in your data frame and variable. 
-#_____ %>% count(_____)
-```
-
-What insight can you draw from counting?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-Sometimes, we want to do more than count the number of variables in each grouping. For instance, we may want to group the variables and then perform a calculation within each group. In such cases, we can call **group_by()** to aggregate the observations with common variable values into groups. Then we will call **summarize()** to perform a calculation within each of those groups. **summarize()** takes a set of values and a calculation method and returns a single value. For instance, if we call summarize() with a numeric column in our dataset and "mean" as a calculation method, it will return the average of all the numeric values in that column. When called in conjunction with group_by(), it takes a set of values for each group and a calculation method and returns a single value for each group. 
-
-For the hospitals dataset, we will group the observations by STATE and then use summarize to calculate the sum of BEDS per state. 
-
-```{r}
-#df %>% group_by(CATEGORICAL_VARIABLE) %>% summarize(NEW_VARIABLE_NAME = sum(NUMBERIC_VARIABLE, na.rm = TRUE)) %>% ungroup()
-hospitals %>% group_by(STATE) %>% summarize(state_beds = sum(BEDS, na.rm = TRUE)) %>% ungroup()
-```
-
-Select a numeric variable in your dataset to summarize by the same variable that you counted above. For instance, you may want to sum the total number of reports in a given year, or find the average number of cases reported in a certain state. 
-
-```{r}
-#Uncomment the appropriate lines below, and fill in your data frame, variables, and summarize variable name, and math function. 
-#_____ %>% group_by(_____) %>% summarize(_____ = _____(_____, na.rm = TRUE)) %>% ungroup()
-```
-
-> Notice that I close each of these calls with **ungroup()**. When we group_by() a variable, any subsequent function calls will continue to be performed on the grouped data, unless we ungroup() it. This can be important if we want to filter to specific values after we summarize() the data. Assuming that we don't want to perform a filter operation within each group but on the entire new dataframe created after summarizing, we need to ungroup() the data before performing the filter() operation. In the function calls above, it is not as important to call ungroup() because we are not performing more functions after summarizing. However, I left the call in so that we can get in the habit of remembering to ungroup() when appropriate. 
-
-What insight can you draw from grouping and summarizing?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-Combine any combination of the 5 verbs we learned in class this week (select, filter, group by, summarize, or count) to explore your dataset further. You may also use arrange, summary, or distinct. 
-
-```{r}
-#Fill your function here. 
-```
-
-What insight can you draw from running this function?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-Combine any combination of the 5 verbs we learned in class this week (select, filter, group by, summarize, or count) to explore your dataset further. You may also use arrange, summary, or distinct. 
-
-```{r}
-#Fill your function here. 
-```
-
-What insight can you draw from running this function?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-Combine any combination of the 5 verbs we learned in class this week (select, filter, group_by, summarize, or count) to explore your dataset further. You may also use arrange, summary, or distinct. 
-
-```{r}
-#Fill your function here. 
-```
-
-What insight can you draw from running this function?
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-
-## Other Useful Functions (This is only for reference.)
+## More examples and Useful Functions (This is only for reference.)
 
 ### Add New Variables 
 

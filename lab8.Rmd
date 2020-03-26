@@ -1,5 +1,5 @@
 ---
-title: "Lab 7 - Geographic and Temporal Context"
+title: "Lab 8 - Presenting Data"
 output: 
   github_document:
     toc: true
