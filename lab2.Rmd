@@ -1,90 +1,25 @@
 ---
 title: "Lab 2 - Research Plan and Dataset Hopping"
-output: 
-  github_document:
-    toc: true
-    toc_depth: 2
-editor_options: 
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+editor_options:
   chunk_output_type: inline
 ---
 
 ## Instructions and Overview
 
-R Markdown is an authoring framework for R. It enables you to style and publish documents with code for data analysis embedded within it. In future labs, we will embed code in our documents. However for now, here are a few tricks for styling documents in R Markdown. 
-
-### Code Chunks
-
-```{r eval=FALSE}
-This grey box between ```{r} and ``` is a code chunk. 
-
-Typically, when we put code in this chunk and then publish our R Markdown document, 
-the code written here will be run and output on the screen. 
-
-However, by placing eval=FALSE in the brackets, we tell R not to evaluate the code. 
-
-This is useful when we are just filling text into the code chunk.
-```
-
-### Headings
-
-```{r eval=FALSE}
-Use '#' to create headings:
-  
-# Heading 1
-## Heading 2
-### Heading 3
-```
-
-### Tables
-
-```{r eval=FALSE}
-Tables can be formated like this:
-  
-Header 1 | Header 1
--------- | --------
-Cell 1  | Cell 2
-Cell 3  | Cell 4
- 
-  
-```
-
-Header 1 | Header 1
--------- | --------
-Cell 1  | Cell 2
-Cell 3  | Cell 4
-
-### Bullets and Numbering
-
-```{r eval=FALSE}
-You can bullet content using the '*':
-
-* Point 1
-* Point 2
-```
-
-This will output:
-
-* Point 1
-* Point 2
-
-```{r eval=FALSE}
-You can number content like this:
-
-1. Point 1
-2. Point 2
-```
-
-This will output:
-
-1. Point 1
-2. Point 2
-
-
-For more information about formatting documents in R Markdown see [this](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) cheatsheet. Note how I created a hyperlink here!
-
----
+In this lab, you will begin to outline a research plan for a project analyzing data regarding social vulnerability in the wake of a pandemic. In your groups on Tuesday, you selected a topic for data investigation. This will be the topic you write about in this lab. At this point, we are just documenting what we currently know about our topic and what questions we have regarding the topic. You need not do external research in the first part of this assignment. In the second part of the assignment, you will begin searching for data related that could help address some of the empirical research questions that you devise. At the end of the course, we will come back to this lab to document how our understanding of the topic has changed following several weeks of working with data. 
 
 ## Research Plan
+
+To begin your research plan, please respond to the questions below in full sentences. Again, at this point, you do not need to do external reserach on your topic. You are simply documenting what you currently know about your topic. 
 
 ### What topic am I interested in investigating?
 
@@ -185,6 +120,76 @@ Fill response here.
 
 ## Dataset Hopping
 
+In May 2009, Data.gov - a web portal for accessing US government datasets - was launched by then federal Chief Information Officer Vivek Kundra. Following this, in December 2009, then US President Barack Obama signed the Open Government Data Directive, requiring that all federal agencies post at least 3 high value datasets on data.gov within 45 day. A few years later in May 2013, Pres. Obama signed an Executive Order to: "M"ak[e] Open and Machine Readable the New Default for Government Information." The Order required that the US Office of Management and Budgeting, in collaboration with the CIO and CTO, put out and oversee an Open Data Policy. This policy required the following:
+* Data needs to be published in machine-readable formats
+* Data needs to be described with Project Open Data metadata
+* Data needs to be licensed openly
+See [here](https://www.whitehouse.gov/sites/whitehouse.gov/files/omb/memoranda/2013/m-13-13.pdf ) for more details. 
+Let's talk about what each of these requirments mean:
+
+### Machine-readable
+
+Machine-readable data is data that can be readily processed by a computer. Typically machine-readable data is structured in ways that many different computer applications can recognize. There are different degrees of machine-readability of digital data:
+
+* Data stored in tables in **PDFs** will be the bain of our existence. This is perhaps some of the least machine-readable data that we will encounter in our data research. This is because data in tables in PDFs is not structured in such a way that computer software can easily reference and operate on specific values. 
+* Data stored in **Excel** files is a bit more machine-readable. We can import data stored into an Excel file into Excel, and the software will recognize how the data is strucutured, aggregate values into separate cells, and thus present it to us in a way that we can operate on it. However, to open Excel, we need access to Microsoft products, which we have to pay for. 
+* Data stored in **Comma Separated Value (of .csv)** files is more machine-readable than data stored in Excel files. A CSV file is a text file structured so that line in the file designates a records and various fields for describing that record are separated by commas. If we were to open a CSV file in a basic text editor, it would look something like this:
+
+Name, Age, Birth Month, Time on Phone
+Sally, 23, 3, 42
+Julie, 40, 2, 98
+Mark, 14, 8, 120
+
+However, if we were to open the same file in Excel, each value would be seprated into its own cell. A CSV file is software independent. We can view it in just about any comptuer application that displays data. 
+
+While we won't work with such formats in this course, data can be made even more machine-readable than a CSV file. Formats like XML and RDF allow us to strucutre data with much more specificity. They are often considered the gold standards of machine-readability.
+
+### Metadata
+
+Metadata is data about data, and Project Open Data Metadata is data about datasets. It is considered good practice to document datasets with metadata as it provides information about the context of the dataset to those that will view and use it. There are two kinds of metadata:
+1. Administrative metadata: data about how a dataset is/should be managed
+2. Descriptive metadata: data about what is inside a dataset
+
+Administrative metadata will answer questions such as: 
+* Who created this data?
+* When did they create it?
+* When was it last updated?
+* How often will it be updated?
+* Who published it?
+* Who owns the data, and how is it licensed?
+
+Why is administrative metadata so important? Here are just a few reasons:
+
+* If we run into errors, we need to know who to contact.
+* We need to know how often it is updated to get a sense of its timeliness. 
+* We need to know how it is licensed so that we understand whether we have permission to use it, to distribute it, or to publish it.
+* We need to know who created it in order to understand what perspective the data represents. 
+* We need to be able to cite it. 
+
+Descriptive metadata will answer questions such as:
+* How many columns are in the dataset, and how many rows?
+* What does each row represent?
+* What does each column name refer to?
+
+Why is descriptive metadata so important? Here are just a few reasons:
+
+* We need to ensure that we don’t make improper assumptions of what each column means.
+* We need to know the scope of the data.
+  * What timeframe does it cover?
+  * What geography does it cover?
+  * What topics does it cover?
+* We need to ensure that we know what each row represents. 
+* We need to ensure that we know how each observation is defined. 
+* We need to understand the range of values that might appear in a field.
+* We need to know how missing fields get represented.
+* We need to know about any known inconsistencies in the data. 
+
+### Licensed Openly
+
+Just because something is available on the Web does not necessarily mean that we are free to download and use it as we please. Historically, different government agecies would allow access to certain public datasets for a fee - a fundraising effort of the agency. (Oftentimes, we hear this referred to as data being behind a "paywall.")
+
+At this point in the quarter, you will begin to search for open government or academic datasets. 
+
 Questions
 
 * Dataset?: What is the title of the dataset?
@@ -198,7 +203,7 @@ Questions
 
 Dataset? | Found? | Formats? | DD? | Timespan? | Geography? | Row? | Update?
 ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
-Novel Coronavirus (COVID-19) Cases Data | https://data.humdata.org/dataset/novel-coronavirus-2019-ncov-cases | .csv | No | Jan 22, 2020 to Present  | Global by State/Country | Cases per day by State/Country | Live 
+2019 Novel Coronavirus COVID-19 | https://github.com/CSSEGISandData/COVID-19 | .csv | No | Jan 22, 2020 to Present  | Global by Province/Country | Cases per day by Province/Country | Daily 
 Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill
 Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill
 Fill | Fill | Fill | Fill | Fill | Fill | Fill | Fill

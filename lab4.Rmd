@@ -1,10 +1,15 @@
 ---
 title: "Lab 4 - Data Cleaning and Exploration"
-output: 
-  github_document:
-    toc: true
-    toc_depth: 2
-editor_options: 
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -71,7 +76,7 @@ I have made the hospitals dataset that we will be working with as an example thr
 ```{r}
 hospitals <- read.csv("https://raw.githubusercontent.com/lindsaypoirier/STS-115/master/datasets/Hospitals.csv", stringsAsFactors = FALSE)
 
-world_health_econ <- read.csv("", stringsAsFactors = FALSE)
+world_health_econ <- read.csv("https://raw.githubusercontent.com/lindsaypoirier/STS-115/master/datasets/world_health_econ.csv", stringsAsFactors = FALSE)
 
 cases <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
 
@@ -232,11 +237,11 @@ Following the same pattern, change the type of any incorrectly typed variables i
 ```{r}
 #Uncomment the last line, and fill the appropriate conversion type, your data frame name, and the variable name. Copy and paste this line for each variable that you need to convert to a different type and fill accordingly.
 
-# df$VARIABLE_NAME <- as.numeric(df$VARIABLE_NAME) 
+#df$VARIABLE_NAME <- as.numeric(df$VARIABLE_NAME) 
 
-# Fill with one of the following: as.numeric, as.character, as.logical)
+#Fill with one of the following: as.numeric, as.character, as.logical)
 
-# _____$_____ <- _____(_____$______)
+#_____$_____ <- _____(_____$______)
 ```
 
 This will overwrite the values in that variable with the same values but in the correct format. If you have many, many columns that need to be converted, then we want to apply sapply here, which will perform a function for each value in a vector. Otherwise, skip the block below.
@@ -269,9 +274,9 @@ If needed, do the same to a variable in your own dataset.
 ```{r}
 #Uncomment the last line, and fill in your data frame name to view the first ten rows of the data frame.
 
-#View(df[1:10,]) 
+#df %>% head(10)
 
-#View(_____[1:10,]) 
+#_____ %>% head(10) 
 ```
 
 Null values should appear as a greyed-out and italicized *NA* (Not Available). This communicates to R that this is an empty value or, in other words, that there is not data here. However, if not properly formatted when we import the dataset, you may see Null values appear as:
@@ -280,7 +285,12 @@ Null values should appear as a greyed-out and italicized *NA* (Not Available). T
 * "NONE"
 * "NOT AVAILABLE"
 
-In the hospitals dataset, we can see by calling View() that empty data is filled with the string "NOT AVAILABLE". We want to convert such values to NA values. In the cases dataset, we can see that empty data is filled with an empty string "". We know this because empty rows values in the Province.State field are simply blank. We will also convert such values to NA values. 
+In the world_health_econ dataset, we can see that empty data is formatted correctly with a greyed out NA.
+```{r}
+world_health_econ %>% head(10)
+```
+
+In the hospitals dataset, we can see by calling head() that empty data is filled with the string "NOT AVAILABLE". We want to convert such values to NA values. In the cases dataset, we can see that empty data is filled with an empty string "". In the world_health_econ dataset, we can see that empty data is formatted correctly with a greyed out NA. We know this because empty rows values in the Province.State field are simply blank. We will also convert such values to NA values. 
 
 ```{r}
 is.na(hospitals) <- hospitals == "NOT AVAILABLE"
@@ -401,6 +411,8 @@ hospitals %>% select(POPULATION, BEDS, TTL_STAFF) %>% head(10)
 
 *Continuous numeric variables* are variables that would take an infinite amount of time to precisely count. You can think of these as variables in which it is always possible to measure the value more precisely. For instance, time would be considered a continuous numeric variable because time can be measured with infinite amount of specificity - hours > minutes > seconds > milliseconds > microseconds > nanoseconds ... and so on. Ruler measurements are also continuous because they can also be measured with infinite more precision. In the hospitals dataset, both latitude and longitude are continuous numeric variables as we can always measure them with more precision. 
 
+> We will also treat ratios as continuous data (such as total health spending per person in the world_health_econ data), so you may list those below.
+
 List three continuous numeric variables in your dataset. Use **select()** to select these variables in your dataset, and use **head(10)** to limit the display to the first 10 rows.
 ```{r}
 #Uncomment the last line, and fill the appropriate data frame name and variable names.
@@ -417,18 +429,18 @@ hospitals %>% select(LATITUDE, LONGITUDE) %>% head(10)
 
 In starting our data analysis, we need to have a good sense of what each observation in our dataset refers to - or its *observational unit*. Think of it this way. If you were to count the number rows in your dataset, what would that number refer to? 
 
-> To create this statement, we will use the R function **paste()**. paste() allows you to create strings that concatenate strings that you provide with other values. We separate all of the components of the string we wish to paste together with commas. 
+> To create this statement, we will use the R function **paste()**. paste() allows you to create strings that concatenate other strings that you provide, along with other values. We separate all of the components of the string we wish to paste together with commas. 
 
 ```{r}
 paste("I have", nrow(hospitals), "unique _____ represented in my dataset.")
 paste("I have", nrow(cases), "unique _____ represented in my dataset.")
-
+paste("I have", nrow(world_health_econ), "unique _____ represented in my dataset.")
 ```
 
 Get this statement started for your dataset:
 
 ```{r}
-#Uncomment the last line and fill your data frame name in nrow.
+#Uncomment the last line and fill your data frame name in nrow. At this point, you need only fill in the first blank line.
 
 #paste("I have", nrow(_____), "unique _____ represented in my dataset.")
 ```
@@ -459,7 +471,28 @@ paste("I have", nrow(hospitals), "unique hospitals represented in my dataset.")
 
 > Note that NAME is typically not an appropriate variable to use as a unique key. Let me provide an example to demonstrate this. When I worked for BetaNYC, I was trying to build a map of vacant storefronts in NYC by mapping all commercially zoned properties in the city, and then filtering out those properties where a business was licensed or permitted. This way the map would only include properties where there wasn't a business operating. One set of businesses I was filtering out was restaurants. The only dataset that the city had made publicly available for restaurant permits was broken. It was operating on an automated process to update whenever there was a change in the permit; however, whenever a permit was updated, rather than updating the appropriate fields in the existing dataset, it was creating a new row in the dataset that only included the permit holder (the restaurant name), the permit type, and the updated fields. Notably the unique permit ID was not being included in this new row. We pointed this issue out to city officials, but fixing something like this can be slow and time-consuming, so in the meantime, we looked into whether we could clean the data ourselves by aggregating the rows that referred to the same restaurant. However, without the permit ID it was impossible to uniquely identify the restaurants in the dataset. Sure, we had the restaurant name, but do you know how many Wendy's there are in NYC?
 
-In the cases dataset, the unique ID is less obvious. Because there are multiple provinces listed for each country (but not for all countries), we can't rely on country to uniquely identify each row. See below:
+In the world_health_econ dataset, the unique ID is less obvious. Because we have values reported for multiple countries in multiple year, we need to rely on two variables to signify what makes each observation unique - country and year.
+
+```{r}
+# Count the distinct values in your unique key
+n_unique_keys <- 
+  world_health_econ %>% 
+  select(country, year) %>% 
+  n_distinct()
+
+# Count the rows in your dataset
+n_rows <- nrow(world_health_econ)
+
+# Make sure these numbers are equal
+n_unique_keys == n_rows
+```
+In this dataset a country and year is what makes each observation unique. In other words, the dataset's observational unit is a country in a given reporting year. Now you can confidently say:
+
+```{r}
+paste("I have", nrow(hospitals), "unique countries in a given reporting year represented in my dataset.")
+```
+
+In the cases dataset, the unique ID is also more complicated. Because there are multiple provinces listed for each country (but not for all countries), we can't rely on country to uniquely identify each row. See below:
 ```{r}
 # Count the distinct values in your unique key
 n_unique_keys <- 
@@ -521,20 +554,20 @@ Fill in the statement below, and make sure that it makes sense with your data.
 #paste("I have", nrow(_____), "unique _____ represented in my dataset.")
 ```
 
-Anytime we count something in the world, we are not only engaging in a process of tabulation; we are also engaged in a process of defining. If I count the number of students in class, I first have to define what counts as a student. If someone is auditing the class, do they count? If as the teacher am learning from my students, do I count myself as a student? As I make decisions about how I'm going to define "student," those decisions impact the numbers that I produce. When I change my definition of "student," how I go about tabulating students also changes. 
+Anytime we count something in the world, we are not only engaging in a process of tabulation; we are also engaged in a process of defining. If I count the number of students in class, I first have to define what counts as a student. If someone is auditing the class, do they count? If I, as the instructor, am learning from my students, do I count myself as a student? As I make decisions about how I'm going to define "student," those decisions impact the numbers that I produce. When I change my definition of "student," how I go about tabulating students also changes. 
 
-Thus, as we prepare to count observations in a dataset, it is important to know how those observations are defined. When I say that there are 7581 hospitals in the hospitals dataset, this number does not mean much until I understand how hospitals were defined in the dataset. Which hospitals? In what part of the world? From what time period? Are hospitals that were once open and are now closed included? Are psychiatric hospitals included, or only medical hospitals? Are nursing homes included? Who gets to decide what counts as a hospital? 
+Thus, as we prepare to count observations in a dataset, it is important to know how those observations are defined. When I say that there are 7581 hospitals in the hospitals dataset, this number does not mean much until I understand how hospitals were defined in the dataset. Which hospitals? In what part of the world? From what time period? Are hospitals that were once open and are now closed included? Are psychiatric hospitals included? Are nursing homes included? Who gets to decide what counts as a hospital? 
 
 Analyzing the hospitals [data documentation](https://hifld-geoplatform.opendata.arcgis.com/datasets/6ac5e325468c4cb9b905f1728d6fbf0f_0), we find the following statement:
 "This feature class/shapefile contains locations of Hospitals for 50 US states, Washington D.C., US territories of Puerto Rico, Guam, American Samoa, Northern Mariana Islands, Palau, and Virgin Islands.The dataset only includes hospital facilities based on data acquired from various state departments or federal sources which has been referenced in the SOURCE field. Hospital facilities which do not occur in these sources will be not present in the database....The database does not contain nursing homes or health centers."
 
 Knowing how hospitals are defined helps us put the count of hospitals in our dataset into context.
 
-Consider the cases dataset. Throughout the world, due to competing geopolitics, different countries draw geographic borders and name countries differently. For instance, while the United Nations and many other countries recognize 'Myanmar' as the official name of the southeast-Asian country (after a ruling military junta declared the name change in 1989), the US and the UK refer to the country as 'Burma', arguing that official country name changes should be based on a democratic process. The borders between Israel, Syria, Lebanon, and Palestine are constantly in dispute as political processes and religious factions clash. Check out this long list of [territorial disputes](https://en.wikipedia.org/wiki/List_of_territorial_disputes_. So, how are countries and provinces defined in the cases dataset?
+Consider the cases dataset. Throughout the world, due to competing geopolitics, different countries draw geographic borders and name countries differently. For instance, while the United Nations and many other countries recognize 'Myanmar' as the official name of the southeast-Asian country (after a ruling military junta declared the name change in 1989), the US and the UK refer to the country as 'Burma', arguing that official country name changes should be based on a democratic process. The borders between Israel, Syria, Lebanon, and Palestine are constantly in dispute as political processes and religious factions clash. Check out this long list of [territorial disputes](https://en.wikipedia.org/wiki/List_of_territorial_disputes_. So, amongst all of these political factors, how are countries and provinces defined in the cases dataset?
 
 When the data was first released, the Johns Hopkins team producing this dataset were not following a particular naming standard for countries. Check out [this issue](https://github.com/CSSEGISandData/COVID-19/issues/340) in their GitHub issue queue. Several community members requested that the [ISO 3166-2](https://www.iso.org/iso-3166-country-codes.html) country codes be added to the dataset. ISO 3166-2 country codes are numbers standardized by the International Standards Organization for uniquely referring to each country or subdivision; each code corresponds to a country or region recognized by the United Nations. You can keep track of how this issue is progressing [here](https://github.com/CSSEGISandData/COVID-19/issues/372). In this sense, the definitions of provinces/countries is evolving in the dataset - and notably evolving towards standardized definitions recognized by the UN. 
 
-> Note that one of issue that has come up with making this change is what to do about the row in the dataset representing the number of cases on the Princess Cruise.
+> Note that one of issues that has come up with making this change is what to do about the row in the dataset representing the number of cases on the Princess Cruise.
 
 How are the observational units in your dataset defined? Be sure to refer to the data documentation. 
 
@@ -547,7 +580,6 @@ Who or what organization manages these definitions? In other words, who gets to 
 ```{r eval=FALSE}
 Fill your response here. 
 ```
-
 
 ### Summary
 
@@ -569,16 +601,6 @@ Summarize the values in each variable in your data frame.
 ```{r}
 #Uncomment the appropriate lines below, and fill in your data frame.
 #_____ %>% summary()
-
-#If you have a dataset with more than 20 columns, you can select which columns to run summary on using the following code:
-
-#df %>% select(VARIABLE_NAME1:VARIABLE_NAME20) %>% summary()
-#_____ %>% select(_____:_____) %>% summary()
-
-#or if the columns you would like to summarize are not consecutive, you can call:
-
-#df %>% select(c(VARIABLE_NAME1, VARIABLE_NAME5, VARIABLE_NAME20)) %>% summary()
-#_____ %>% select(c(_____, _____, _____)) %>% summary()
 ```
 
 Have you identified any areas where you may need to conduct more cleaning? Email me if you are unsure of how to address this issue. 
@@ -654,7 +676,7 @@ Check the number of NAs in each variable in your dataset by filling in the blank
 
 ```{r}
 #colSums(sapply(df, is.na))
-colSums(sapply(hospitals, is.na))
+colSums(sapply(world_health_econ, is.na))
 ```
 
 ```{r}
@@ -675,11 +697,10 @@ Here is how we filter data to the rows in which a certain variable is an NA.
 
 ```{r}
 #df %>% filter(is.na(VARIABLE_NAME)) %>% head(10) #We add head(10) to limit our output to the first ten rows
-hospitals %>% filter(is.na(BEDS)) %>% head(10)
+world_health_econ %>% filter(is.na(tot_health_sp_pp)) %>% head(30)
 ```
 
 If your dataset has no columns with NAs just note that below, and move on to 4. Otherwise, fill in the blanks below. 
-
 ```{r}
 #Uncomment the appropriate lines below, and fill in your data frame and variable
 
@@ -696,6 +717,8 @@ To confirm our hypotheses about NAs, we often have to apply additional filter co
 
 ```{r}
 #df %>% filter(Country == "Luxembourg") 
+
+world_health_econ %>% filter(country %in% c("Afghanistan", "Liberia"))
 #...and then we would check to see if there are missing values in the columns under consideration. 
 ```
 
@@ -703,6 +726,8 @@ Or maybe we hypothesize that a certain geography did not report values in a cert
 
 ```{r}
 #df %>% filter(Country == "Luxembourg" & Year == 2017) 
+
+world_health_econ %>% filter(country %in% c("Afghanistan", "Liberia") & year < 1999)
 #...and then we would check to see if there are missing values in the columns under consideration. 
 ```
 
@@ -710,24 +735,11 @@ Also note that we can filter to rows with all NAs in multiple columns by calling
 
 ```{r}
 #df %>% filter_at(vars(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME5:VARIABLE_NAME8), all_vars(is.na(.)))
+
+world_health_econ %>% filter_at(vars(tot_health_sp_pp:gov_prop_health_spending), all_vars(is.na(.)))
 ```
 
-And that we can filter to rows with any NAs in multiple columns by calling:
-
-```{r}
-#df %>% filter_at(vars(VARIABLE_NAME1, VARIABLE_NAME2, VARIABLE_NAME5:VARIABLE_NAME8), any_vars(is.na(.)))
-```
-
-For instance, I might check to see if the BEDS variable is NA at only hospitals whose STATUS is CLOSED or in observations that were sourced prior to 2017. 
-
-```{r}
-hospitals %>% filter(STATUS == "CLOSED") %>% select(NAME, BEDS)
-hospitals %>% filter(SOURCEDATE < as.Date("2017-01-01")) %>% select(NAME, BEDS) 
-
-#as.Date tells R to interpret a string as a date. With the lubridate library, a value will be considered less than (<) a date if it came before the date. 
-```
-
-For hospitals, both of these filters don't confirm a hypothesis. There are plenty of observations with BEDS for hospitals that are Closed, and also plenty of observations with BEDS listed prior to 2017. Sometimes there are context clues within the dataset as to why certain data is unavailable, and other times there are not. We don't have these context clues for missing values in BEDS in the hospitals dataset. It's likely that NAs in BEDS are simply there because the data aggregators couldn't find the data. 
+With these tests, I can see that it is likely that there are NAs in the world_health_econ dataset because certain countries - such as Afghanistan, Iraq, Liberia, Zimbabwe, and Somalia did not report these measures in specific years. Notably these are mostly countries where there are considerable barriers to data collection, due to conflict and corruption. Unfortunately, the WHO has not released a data dictionary for this data, so it is difficult to confirm this.
 
 Apply a few additional filter conditions to test your hypothesis as to why there are missing values in the variable you selected. 
 
@@ -752,7 +764,9 @@ How might these missing values impact your data analysis? Why might it be import
 ```{r eval=FALSE}
 Fill your response here. 
 ```
-
+--- 
+# ASSIGNMENT ENDS HERE. 
+--- 
 ## More examples and Useful Functions (This is only for reference.)
 
 ### Add New Variables 

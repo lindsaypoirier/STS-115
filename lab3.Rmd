@@ -1,18 +1,25 @@
 ---
 title: "Lab 3 - Context, Historical Background, and Stakeholders"
-output: 
-  github_document:
-    toc: true
-    toc_depth: 2
-editor_options: 
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+editor_options:
   chunk_output_type: inline
 ---
 
 ## Instructions and Overview
 
-This week you are going to do some background research on the dataset that you will be primarily working with throughout the quarter. As we are learning in our reading of *The Fires*, it is important that we understand how the datasets we analyze get produced, who produced them, what they are designed to represent (and also what they might ignore), and what socio-political contexts might affect what their scope. 
+This week you are going to do some background research on the dataset that you will be working with throughout the quarter. As we are learning in our reading of *The Fires*, it is important that we understand how the datasets we analyze get produced, who produced them, what they are designed to represent (and also what they might ignore), and what socio-political contexts might affect what their scope. 
 
-As you respond to these questions, you should be sure to examine the data documentation, the web source where you retreived the data, the website of the organization that collected or published the data, and any laws/press releases/news articles that reference the data. **All responses should be in your own words, and be sure to cite all sources.** You most likely will not be able to answer all questions below. This is OK. If cannot find an answer to a question, please describe the steps you took to try and find the answer. 
+Please respond to at least 10 of the questions listed below. As you respond to these questions, you should be sure to examine the data documentation, the web source where you retreived the data, the website of the organization that collected or published the data, and any laws/press releases/news articles that reference the data. **All responses should be in your own words, and be sure to cite all sources.** 
+
+Very rarely is data documentation thorough enough to address all of the questions below. You can expect that you will likely not be able to answer all questions. As you work through the assignment, consider how well you believe the dataset to be documented. How could the documentation be improved?
 
 ## Data Context and Historical Background
 

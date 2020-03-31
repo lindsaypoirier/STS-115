@@ -1,16 +1,21 @@
 ---
-title: "Lab 9 - Summarizing Insights and Data Gaps"
-output: 
-  github_document:
-    toc: true
-    toc_depth: 2
-editor_options: 
+title: "Lab 9 - Presenting Data"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+editor_options:
   chunk_output_type: inline
 ---
 
 ## Instructions and Overview
 
-Fill 
+This week, I'd like you to primarily focus on preparing your final presentation. However, we will also spend just a bit of time documenting the uncertainty in each of the numbers and plots on our dashboards. 
 
 ## Getting Started
 
@@ -58,96 +63,108 @@ hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
 #Copy and paste relevant code from Lab 4 to clean your data here. This includes any row binding, character removals, converions in variable type, date formatting, or NA conversions. 
 ```
 
-## Summarize Insights
-
-In about 500 words, describe what you have been able to conclude about your research topic from your data analysis. In what ways have these findings furthered your understanding of the issues addressed in your research questions? Reference specific statistics, plots, or tables in this section to communicate what key insights you were able to draw from the data. Some things to consider as you are writing this section:
-
-1. Be sure to contextualize your findings in the appropriate temporal and geographic context. If your dataset is about the average age of homeowners, and it only spans from 2012-2015 and covers the state of CA:
-  * Imprecise: "50% of homeowners are between the ages of 25 and 40."
-  * Better: "From 2012 to 2015, in the state of CA, 50% of homeowners are between the ages of 25 and 40."
-2. Make a clear distinction between what the data empirically shows you and how you interpret the results. Again, imagine that your dataset is about the average age of homeowners:
-  * Imprecise: "This data indicates that most homeowners are young." 
-  * Better: "According to this data, from 2012 to 2015, in the state of CA, 50% of homeowners are between the ages of 25 and 40. This suggests that young adults make up a significant portion of homeowners in CA in the reported years."
-3. Consider your data issues. Let's say homeowner rates were sampled from a small portion of the population, and you noted inaccuracies in the data collection:
-  * Imprecise: "From 2012 to 2015, in the state of CA, 50% of homeowners are between the ages of 25 and 40."
-  * Better: "From the population sampled from 2012 to 2015 in the state of CA, 50% of homeowners are between the ages of 25 and 40. However, due to issues with collecting information from families, this percentage may be imprecise."
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-## Characterize Knowledge Gaps
-
-In what ways might the data in your dataset be inaccurate? Describe in specific detail how these inaccuracies might affect your data analysis. Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-In what ways might your dataset be incomplete or non-representative of the extent of the issues? Describe in specific detail how the data's incompleteness might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-In what ways have you had to make assumptions in order to glean insights from your dataset? Describe in specific detail how these assumptions might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-What don’t you know about your data domain that has made it difficult to interpret the data? Describe in specific detail how these cultural gaps might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
-
-```{r eval=FALSE}
-Fill your response here. 
-```
-
-Using the functions we have learned in R, create one plot that graphically represents one of the issues that you outlined above. It might be a plot that displays the sampling gaps. It might be a plot that showcases where data quality issues are present in your data. It might be a set of plots that show how different results are produced when different assumptions are made. Write a caption for this plot, explaining how it illustrates potential issues with your data analysis. 
-
-```{r fig.height=5, fig.width=10}
-#Fill code here. 
-```
-
-
 ## Continue your shiny app.
 
-With this in mind, we are going to add the capacity for users to specify specific geographies and timeframes when viewing the data in our app. While I believe all of you have a geography represented in your data, some of you do not have date and time represented in your data. If this is the case, you may remove the commented data-time inputs from the code below. 
-
-At this point, we will begin working in the ui code block and creating more crosstalk between the ui and the server. Users will input information into the front end of the app, and that input will be communicated to the server. More specifically, users will select a geography and a data/timeframe, and the server will filter the dataset according to the selected features and recreate the values/plots on the filtered data. 
-
-Be sure to follow all commented instructions below to add inputs to your Shiny app. 
+Now we will aggregate all of the text that you produced above, along with text that you produced in lab 3 into an "About the Data" page on your Shiny App. Follow the instructions below to fill your text into a new page created on the front end of the app. 
 
 ```{r}
-geo_input_choices <- hospitals %>% select(STATE) %>% distinct() %>% arrange(STATE)
-date_input_start <- hospitals %>% summarize(date = min(SOURCEDATE))
-date_input_end <- hospitals %>% summarize(date = max(SOURCEDATE))
+#INPUT VARIABLES
+
+geo_input_choices <- 
+  #REPLACE hospitals BELOW WITH YOUR OWN DATAFRAME
+  hospitals %>% 
+  #REPLACE STATE BELOW WITH YOUR OWN GEOGRAPHIC VARIABLE
+  select(STATE) %>% 
+  distinct() %>% 
+  #REPLACE STATE BELOW WITH YOUR OWN GEOGRAPHIC VARIABLE
+  arrange(STATE)
+
+#COMMENT LINES BELOW IF YOU DO NOT HAVE A TEMPORAL VARIABLE IN YOUR DATAFRAME
+date_input_start <- 
+  #REPLACE hospitals BELOW WITH YOUR OWN DATAFRAME
+  hospitals %>% 
+  #REPLACE SOURCEDATE BELOW WITH YOUR OWN TEMPORAL VARIABLE
+  summarize(date = min(SOURCEDATE))
+
+date_input_end <- 
+  #REPLACE hospitals BELOW WITH YOUR OWN DATAFRAME
+  hospitals %>% 
+  #REPLACE SOURCEDATE BELOW WITH YOUR OWN TEMPORAL VARIABLE
+  summarize(date = max(SOURCEDATE))
+#COMMENT LINES ABOVE IF YOU DO NOT HAVE A TEMPORAL VARIABLE IN YOUR DATAFRAME
+
+#UI
 
 ui <- dashboardPage(
   
+  #REPLACE 'TITLE HERE' BELOW WITH YOUR OWN TITLE
   dashboardHeader(title = "TITLE HERE"),
+  #REPLACE 'TITLE HERE' ABOVE WITH YOUR OWN TITLE
   
   dashboardSidebar(
+      sidebarMenu(
+        menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+        menuItem("About the Data", tabName = "about", icon = icon("info-sign"))
+      ),
       selectInput(inputId = "geo_val", label = "Select an geography:", choices = geo_input_choices, selected = geo_input_choices[1]),
+      #COMMENT LINE BELOW IF YOU DO NOT HAVE A TEMPORAL VARIABLE IN YOUR DATAFRAME
       dateRangeInput(inputId = "date_val", label = "Select a date range:", start = date_input_start$date, end = date_input_end$date)
+      #COMMENT LINE ABOVE IF YOU DO NOT HAVE A TEMPORAL VARIABLE IN YOUR DATAFRAME
   ),
   
   dashboardBody(
-      infoBoxOutput("value1", width = 4),
-      infoBoxOutput("value2", width = 4),
-      infoBoxOutput("value3", width = 4),
-   
-      box(plotOutput("plot1")),
-      box(plotOutput("plot2")),
-      box(plotOutput("plot3")),
-      box(plotOutput("plot4"))
-
+    tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }'))),
+    tabItems(
+      tabItem(tabName = "dashboard",
+        infoBoxOutput("value1", width = 4),
+        infoBoxOutput("value2", width = 4),
+        infoBoxOutput("value3", width = 4),
+        
+        box(tags$p("The number above does not account for..."), width = 4),
+        box(tags$p("The number above does not account for..."), width = 4),
+        box(tags$p("The number above does not account for git, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam ei"), width = 4),
+     
+        box(plotOutput("plot1")),
+        box(plotOutput("plot2")),
+        
+        box(tags$p("The plot above does not account for..."), width = 6),
+        box(tags$p("The plot above does not account for..."), width = 6),
+        
+        box(plotOutput("plot3")),
+        box(plotOutput("plot4")),
+        
+        box(tags$p("The plot above does not account for..."), width = 6),
+        box(tags$p("The plot above does not account for..."), width = 6)
+      ),
+      tabItem(tabName = "about",
+              tags$h1("Data Source"),
+                #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR DATA'S SOURCE
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"),
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR DATA'S SOURCE
+              
+              tags$h1("Data Context"),
+              #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR DATA'S CONTEXT
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"),
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR DATA'S SOURCE
+              
+              tags$h1("Insights"),
+              #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR INSIGHTS
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"),
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR INSIGHTS
+              
+              tags$h1("Knowledge Gaps"),
+              #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR KNOWLEDGE GAPS
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?")
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR KNOWLEDGE GAPS
+      )
+    )
   )
 )
   
 
 ```
 
- 
+We won't be touching the server function this week. You can copy and paste yours from Lab 7 to replace my code below. 
 
 ```{r}
 server <- function(input, output) {
@@ -224,58 +241,4 @@ server <- function(input, output) {
 ```{r}
 shinyApp(ui, server)
 ```
-
-
-## Other Case Studies to Consider (I will continue to grow this list)
-
-### Case Study: Chrono-politics of Calls to 311 during Hurricane Sandy
-
-311 is basically a customer service number for cities - a number for residents and visitors to report non-emergency issues, such as potholes and graffiti to city officials. In most cities, every call to 311 gets aggregated in a database, and increasingly, city officials are performing data analysis on the calls to figure out where certain issues in the city are concentrated. If they receive a number of calls about missed garbage pick-ups in a certain community, they may divert attention and resources there for improved sanitation. Often this data is publicly accessible for communities to analyze. 
-
-```{r}
-library(scales)
-nyc311 <- read.csv("https://github.com/lindsaypoirier/STS-115/blob/master/datasets/311_before_2015.csv?raw=true", stringsAsFactors = FALSE) 
-```
-
-When Hurricane Sandy hit NYC in 2012, the City leveraged data about calls New Yorkers had made to 311 to track where a number of different issues were occurring. Visualizing data about 311 calls in the three months following the disaster indeed showed a spike in complaints about issues like damaged trees and lack of heat in apartment buildings throughout the city. Leveraging this data, the city was able to position the devastation of the disaster as episodic - a result of natural forces beyond their control.
-
-```{r}
-nyc311 %>% 
-  filter(year(Created.Date) == 2012 & month(Created.Date) %in% c(7:11)) %>%
-  ggplot(aes(x = as.Date(Created.Date), group = 1)) +
-  geom_vline(xintercept=as.Date(c("2012-10-29")),linetype=4, colour="black") +
-  geom_line(stat="count") + 
-  facet_wrap(~Complaint.Type) + 
-  labs(x="Month", y="Count") +
-  scale_x_date() +
-  theme_bw() +
-  annotate(geom = "label", x = as.Date("2012-10-29"), y = 4000, label = "Hurricane Sandy", angle = 90)
-```
-
-However, social researchers have argued that it is not so simple to delimit the temporal boundaries of a disaster. While a natural event may happen on a particular day or span of days, the structural conditions of the communities they impact have much longer timespans. Natural events occurring in delimited periods of time often exacerbate existing social issues like poverty, lack of affordable housing, and unequal access to healthcare. 
-
-Let's zoom out on the 311 data to look at these issues over the course of years versus these three months.  Complaints to 311 about damaged trees do spike following most major natural events. However, complaints about lack of heat in apartments spike every year in October ...because in New York, that's when it gets cold. By only look at the data in months immediately after the disaster, the city could obscure the big picture - that poor New Yorkers face apartment negligence every year. The temporal context in which we analyze data matters a great deal for how we interpret it. 
-
-```{r fig.height=3, fig.width=10}
-nyc311 %>% 
-  ggplot(aes(x=as.Date(Created.Date), col=as.factor(year(Created.Date)), group = year(Created.Date))) +
-  geom_vline(xintercept=as.Date(c("2010-03-12","2010-09-16","2011-08-28","2011-10-29","2012-10-29")),linetype=4, colour="black") +
-  geom_line(stat = "count") + 
-  facet_wrap(~Complaint.Type) +
-  labs(x="Month", col="Year") +
-  scale_x_date(breaks = "3 months", labels=date_format("%b-%y")) +
-  theme_bw() +
-  annotate(geom = "label", x = as.Date("2010-03-12"), y = 4000, label = "nor'easter", angle = 90) +
-  annotate(geom = "label", x = as.Date("2010-09-16"), y = 4000, label = "tornadoes", angle = 90) +
-  annotate(geom = "label", x = as.Date("2011-08-28"), y = 4000, label = "Hurricane Irene", angle = 90) +
-  annotate(geom = "label", x = as.Date("2011-10-29"), y = 4500, label = "Halloween nor'easter", angle = 90) +
-  annotate(geom = "label", x = as.Date("2012-10-29"), y = 4000, label = "Hurricane Sandy", angle = 90)
-  #nor'easter, tornadoes, Irene, Halloween nor'easter, Sandy
-```
-
-> Liboiron, Max. 2015. “Disaster Data, Data Activism: Grassroots Responses to Representing Superstorm Sandy.” In Extreme Weather and Global Media, edited by Julia Leyda and Diane Negra. Taylor & Francis Group. https://doi.org/10.4324/9781315756486-7.
-
-
-
-
 
