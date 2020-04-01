@@ -41,11 +41,10 @@ Before we continue, please watch this 8-minute video introducing you to the RStu
 
 The R community has developed a series of *packages* or collections of functions that we can use when coding in R. In this course we will be leveraging a series of packages known as the Tidyverse - designed to help users clean, transform, analyze, and visualize data. We will also be leveraing a series of packages for buiding a shiny data dashboard.
 
+**Skip installing these packages if you are working in RStudio Cloud**
 You will need to install the following packages in your R environment. To do so, you should copy and paste the following line into your Console. If you don't know where you console is, be sure to rewatch the RStudio YouTube video above. 
 
 install.packages(c("tidyverse", "lubridate", "shiny", "shinydashboard", "shinyWidget", "rmarkdown"))
-
-Alternatively, you may see a yellow warning bar at the top of the RStudio screen alerting you that packages need to be installed. You can click the Install link to install these packages.
 
 Once packages are installed, to load the package, we call the function *library()*, which let's R know that we will be referencing the functions encoded for this package in our code. You can think of an R package like a book, stored in a computer library. When you call, library(), it is as if we are checking that book out of the library so that we may reference its functions in our code. Run the code below after installing the packages above to ensure that everything installed properly. Refer to the video above if you do not know how to run the code. 
 
