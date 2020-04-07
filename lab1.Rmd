@@ -23,7 +23,7 @@ For those of you that are Stats majors, some of the content of labs 4-7 will fee
 
 ## Introduction to RStudio
 
-In this couse we will be learning how to code in R inside the RStudio interface. You may be wondering the difference between the two. 
+In this course we will be learning how to code in R inside the RStudio interface. You may be wondering the difference between the two. 
 
 **R** is a statistical computing language that allows you to:
 * Store data in a variety of formats
@@ -39,7 +39,7 @@ Before we continue, please watch this 8-minute video introducing you to the RStu
 
 ### Installing Packages
 
-The R community has developed a series of *packages* or collections of functions that we can use when coding in R. In this course we will be leveraging a series of packages known as the Tidyverse - designed to help users clean, transform, analyze, and visualize data. We will also be leveraing a series of packages for buiding a shiny data dashboard.
+The R community has developed a series of *packages* or collections of functions that we can use when coding in R. In this course we will be leveraging a series of packages known as the Tidyverse - designed to help users clean, transform, analyze, and visualize data. We will also be leveraging a series of packages for building a shiny data dashboard.
 
 **Skip installing these packages if you are working in RStudio Cloud**
 You will need to install the following packages in your R environment. To do so, you should copy and paste the following line into your Console. If you don't know where you console is, be sure to rewatch the RStudio YouTube video above. 
@@ -134,7 +134,7 @@ For more information about formatting documents in R Markdown see [this](https:/
 
 ## Course Themes
 
-On March 30, 2020, Nate Silver - who had been vociferoulsy vocal in sharing his insights into data regarding the Covid-19 pandemic - tweeted out to his networks:
+On March 30, 2020, Nate Silver - who had been vociferously vocal in sharing his insights into data regarding the Covid-19 pandemic - tweeted out to his networks:
 
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Don&#39;t make pretty graphs with the data either. That just obscures how messy it is.</p>&mdash; Nate Silver (@NateSilver538) <a href="https://twitter.com/NateSilver538/status/1244681742168010755?ref_src=twsrc%5Etfw">March 30, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
@@ -144,9 +144,9 @@ Do we all know who Nate Silver is? Nate Silver is perhaps one of the biggest sup
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/MhT5qT116wo" frameborder="0" allowfullscreen></iframe>
 
-An important lesson that emerged from this incredible data flop is just how important it is to be be able to critique our data landscape - to question what data is available and what data is not available, to consider how representative data may be of complex issues, and to acknowledge and communicate data uncertainties. The 2016 polls failed to consider a number of things. While widespread polling had been taking the pulse of the country in the months leading up to the election, pollsters underestimated the impact that voters undecided at the time polls were taken could have on the overall reults. They failed to account for data uncertainty. Further, not every person in the country is polled leading up to the election. When determining who to poll, pollsters devise "representative samples" of the population - reaching out to likely voters in diverse age brackets, with diverse income levels, and with diverse educational backgrounds. They have to make a lot of assumptions about the composition of the country when coming up with these sample - often relying on how elections played out in the past, along with what has culturally changed since past elections, to predict how they will play out in the future. In 2016, many of their assumptions about the country's composition were wrong. 
+An important lesson that emerged from this incredible data flop is just how important it is to be be able to critique our data landscape - to question what data is available and what data is not available, to consider how representative data may be of complex issues, and to acknowledge and communicate data uncertainties. The 2016 polls failed to consider a number of things. While widespread polling had been taking the pulse of the country in the months leading up to the election, pollsters underestimated the impact that voters undecided at the time polls were taken could have on the overall results. They failed to account for data uncertainty. Further, not every person in the country is polled leading up to the election. When determining who to poll, pollsters devise "representative samples" of the population - reaching out to likely voters in diverse age brackets, with diverse income levels, and with diverse educational backgrounds. They have to make a lot of assumptions about the composition of the country when coming up with these sample - often relying on how elections played out in the past, along with what has culturally changed since past elections, to predict how they will play out in the future. In 2016, many of their assumptions about the country's composition were wrong. 
 
-As statisticians turn their attention to the current public health crisis around Covid-19, such considerations should be at the forefront of our minds. As we will see thoughout this course, the data that we have about Covid-19 is incredibly messy and riddled with inconsistencies. Data scientists and international organizations have had to very quickly aggregate data from all corners of the world - collecting case counts from countries with different medical systems, different standards for medical data reporting, and different politics. These countries themselves are trying to figure out how to gather this data from states and provinces, and states and provinces themselves are trying to figure out how to gather this data from hospitals. The coordinational capacity needed to produce the numbers that we eventually see is enormous, demanding considerable global information infrastructure.
+As statisticians turn their attention to the current public health crisis around Covid-19, such considerations should be at the forefront of our minds. As we will see throughout this course, the data that we have about Covid-19 is incredibly messy and riddled with inconsistencies. Data scientists and international organizations have had to very quickly aggregate data from all corners of the world - collecting case counts from countries with different medical systems, different standards for medical data reporting, and different politics. These countries themselves are trying to figure out how to gather this data from states and provinces, and states and provinces themselves are trying to figure out how to gather this data from hospitals. The coordinational capacity needed to produce the numbers that we eventually see is enormous, demanding considerable global information infrastructure.
 
 Further, as we will consider again and again throughout the quarter, the case count data that we have is only as good as the amount of testing for the virus that is taking place, and in many countries, including the US, testing has been incredibly slow. This guarantees that case counts will be under-reported. These are the types of issues Nate Silver is referring to when he tells the world to stop trying to produce pretty graphs of the spread. 
 
@@ -193,7 +193,7 @@ So-called "unbiased" algorithms for screening resumes turn out to favor men over
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/JOzQjT-hJ8k" frameborder="0" allowfullscreen></iframe>
 
-This is not to say that we shouldn't critique data represntations and combat data practices that propagate inequality or harm certain communities; we absolutely should. However, in a world where this is playing out, I would much prefer to *know* the politics and perspectives of the individuals collecting data and producing data analyses than to pretend they don't exist. Then I can decide for myself whether I find their work trustworthy. In my opinion, we need ethical and politically responsible human data stewards - not processes that pretend to be able to strip data of its humanness. I hope you see this course as an opportunity to develop some of these skills. In this course, we will take biased data as a given and figure out how to move from there. 
+This is not to say that we shouldn't critique data representations and combat data practices that propagate inequality or harm certain communities; we absolutely should. However, in a world where this is playing out, I would much prefer to *know* the politics and perspectives of the individuals collecting data and producing data analyses than to pretend they don't exist. Then I can decide for myself whether I find their work trustworthy. In my opinion, we need ethical and politically responsible human data stewards - not processes that pretend to be able to strip data of its humanness. I hope you see this course as an opportunity to develop some of these skills. In this course, we will take biased data as a given and figure out how to move from there. 
 
 ## Introduction to R
 
@@ -339,7 +339,7 @@ first_list$z[2]
 
 ### Data Frames
 
-In this course, we will be working primarily with rectangular datasets in a data type called a *data frame*.  A data frame has a certain number of rows and a certain number of colummns. It is a list of *vectors* of all the same length. 
+In this course, we will be working primarily with rectangular datasets in a data type called a *data frame*.  A data frame has a certain number of rows and a certain number of columns. It is a list of *vectors* of all the same length. 
 
 **From this point forward, we will refer to each row in a data frame as an *observation* and each column in a data frame as a *variable*.** This is because rows refer to something that we see in the world, and columns describe that thing we are seeing. Imagine we have a table like this below.
 
