@@ -15,13 +15,43 @@ editor_options:
 
 ## Instructions and Overview
 
-In this lab, you will begin to outline a research plan for a project analyzing data regarding social vulnerability in the wake of a pandemic. In your groups on Tuesday, you selected a topic for data investigation. This will be the topic you write about in this lab. At this point, we are just documenting what we currently know about our topic and what questions we have regarding the topic. You need not do external research in the first part of this assignment. In the second part of the assignment, you will begin searching for data that could help address some of the empirical research questions that you devise. At the end of the course, we will come back to this lab to document how our understanding of the topic has changed following several weeks of working with data. 
+In this lab, you will begin to outline a research plan for a project analyzing data regarding social vulnerability in the wake of a pandemic. In your groups on Tuesday, you selected a topic for data investigation. This will be the topic you write about in this lab. At this point, we are just documenting what we currently know about our topic and what questions we have regarding the topic. In the second part of the assignment, you will begin searching for data that could help address some of the empirical research questions that you devise. At the end of the course, we will come back to this lab to document how our understanding of the topic has changed following several weeks of working with data. 
+
+In some sections of this document, you will need to fill in responses to questions. In two sections, you will need to fill in tables. Be sure to read the document carefully so that you know where you will need to respond.
+
+## Background
+
+I've included news articles below for each of your project groups that discuss some of the issues related to your topic. I'd recommend that you read through the article corresponding to your topic first to get a sense of how your topic is being discussed today. If you can't access the article, send me a note on Slack, and I will send you a PDF.
+
+### Healthcare
+
+['It's a racial justice issue': Black Americans are dying in greater numbers from Covid-19](https://www.theguardian.com/world/2020/apr/08/its-a-racial-justice-issue-black-americans-are-dying-in-greater-numbers-from-covid-19)
+
+### Food Security
+
+[‘Never Seen Anything Like It’: Cars Line Up for Miles at Food Banks](https://www.nytimes.com/2020/04/08/business/economy/coronavirus-food-banks.html)
+
+### Domestic Abuse
+
+[A New Covid-19 Crisis: Domestic Abuse Rises Worldwide](https://www.nytimes.com/2020/04/06/world/coronavirus-domestic-violence.html)
+
+### Income Security
+
+[For Millions of People, Relief From the COVID-19 Stimulus Package Remains Out of Reach](https://time.com/5816775/coronavirus-unemployment-stimulus/)
+
+### Environment
+
+[New Research Links Air Pollution to Higher Coronavirus Death Rates](https://www.nytimes.com/2020/04/07/climate/air-pollution-coronavirus-covid.html)
+
+### Infrastrucutre for Remote Work
+
+[COVID-19 shines light on 'digital divide' across the US](https://www.cnet.com/news/covid-19-shines-light-on-digital-divide-across-the-us/)
 
 ## Research Plan
 
-To begin your research plan, please respond to the questions below in full sentences. Again, at this point, you do not need to do external research on your topic. You are simply documenting what you currently know about your topic. 
+To begin your research plan, please respond to the questions below in full sentences. At this point, you do not need to do external research on your topic. You are simply documenting what you currently know about your topic. **Note that we will focus all our research in the context of the US. The only reason for this is that if we were to focus on topics in other countries, much of the public data would not be available in English, which would make it difficult for groups to collectively work with it.**
 
-### What topic am I interested in investigating?
+### What topic am I investigating? (just one phrase here is fine.)
 
 ```{r eval=FALSE}
 Fill response here. 
@@ -29,7 +59,7 @@ Fill response here.
 
 ### Why is this topic relevant to contemporary public health or social vulnerability in the wake of a disaster?
 
-Be sure to think about the causation activity that we did in class. Why is this topic relevant to discuss in the context of a pandemic?
+Why is this topic relevant to discuss in the context of a pandemic?
 
 ```{r eval=FALSE}
 Fill response here. 
@@ -38,20 +68,34 @@ Fill response here.
 *Empirical research questions* are questions that an analyst can assess evidence to address. Examples of social-theoretical questions include:
 
 * Do United States hospitals have enough beds to accommodate the expected influx in Covid-19 cases? At what point will there not be enough beds available?
-* In which states are hospitals better equipped with beds and staff to take on an influx in patients?
+* In which US states are hospitals better equipped with beds and staff to take on an influx in patients over the course of the next month?
 
-### What empirical research questions do I intend to address in my research? List at least two.
+Empirical research questions are specific to a particular time and place. Notice how I delimit my questions to the US above and the second question to a specific month. Now think about your topic. What questions could you ask about your topic that would contribute to an understanding of the social vulnerabilities and strucutral inequalities that shape how people experience the pandemic? Be sure that your question is one that you can assess evidence to address, and that it is specific to a certain time and place. If your topic is mental health, you might ask:
+
+* In 2020, how many people in the United States have insurance that covers therapy visits?
+
+Note how, with the right data I could answer this question definitively.
+
+### What empirical research questions might I address in my research? List at least two.
 
 ```{r eval=FALSE}
 Fill response here. 
 ```
 
-*Social-Theoretical questions* are questions about how certain social, political, or environmental phenomena operate at a broad scale. We often cannot answer these questions with one research project. However, we often aim to increase understanding of these questions through a research project. Examples of social-theoretical questions include:
+> Beware of setting up your question as a dichotomy! Did you use the word 'or' in your question above? I've seen many students do this in past assignments - asking questions like "Was this legislation beneficial to local communities, or was it harmful?" or "Did this technology fix inequities in the community, or did it sustain them?"  In each of these questions, we have structured our research to test two conditions only. Yet, when it comes to studying complex contemporary issues, things are never black and white. It is highly likely that the situation we are examining in our research is much more complicated than these two conditions can capture. We should avoid structuring our research questions to test mutually exclusive categories.  In placing false dichotomies in our research questions, we run the risk of oversimplifying complex causation, and we limit what the research can say.  
+
+*Social-Theoretical questions* are questions about how certain social, political, or environmental phenomena operate at a broad scale. They are much broader than empirical research questions. We often cannot answer these questions with one research project. However, we often aim to increase understanding of these questions through a research project. Examples of social-theoretical questions include:
 
 * How has the United States prioritized critical health infrastructure?
 * How do national hospital business models implicate social vulnerability in the wake of a public health crisis?
 
-### What social-theoretical questions do I intend to address in my research? List at least two. 
+Note how for each of these questions I would need to examine lots of different data and carry out a number of different projects. This whole class will be asking the social-theoretical question:
+
+* How are existing strucural inequalities exacerbated in a pandemic?
+
+Now think about your topic. What broader questions about how social, political, or environmental phenomena operate might you wish to address through research?
+
+### What social-theoretical questions might I address in my research? List at least two. 
 
 ```{r eval=FALSE}
 Fill response here. 
@@ -73,21 +117,22 @@ Fill | Fill
 ---
 
 ## Project Contexts
-At this point, we are going to begin mapping out some of the project contexts. By this I mean that we are going to put your topic into temporal, geographic, and social-cultural perspective. Imagine that your topic is somehow depicted in the center of a plain white sheet of paper. What details would we need to fill into the background in order to bring this topic to life? We would need to add people. We would need to add environments. We would need to communicate the time and place in which the topic was being depicted. The eight questions below encourage you to draw out these contexts. Please respond in complete sentences. 
 
-### What are the key events, dates, or years relevant to this topic?
+At this point, we are going to begin mapping out some of the project contexts. By this I mean that we are going to put your topic into temporal, geographic, and social-cultural perspective. Imagine that your topic is somehow depicted in the center of a plain white sheet of paper. What details would we need to fill into the background in order to bring this topic to life? We would need to add people. We would need to add environments. We would need to communicate the time and place in which the topic was being depicted. The eight questions below encourage you to draw out these contexts. Note that there is not necessarily a wrong way to answer these questions, and you absolutely do not need to answer them comprehensively. If we tried to respond to them "fully," we'd probably go on writing forever! Instead I'd like you curate just a few things that come to mind when you consider your topic in relation to the questions. Having some of these contexts written out will help you as you are searching for data. For each question below, please respond in 1-2+ complete sentences. 
 
-```{r eval=FALSE}
-Fill response here. 
-```
-
-### What are the key sites, locations, or geographies relevant to this topic?
+### What are some key events, dates, or years relevant to this topic? This might be a long span of time or a specific event. 
 
 ```{r eval=FALSE}
 Fill response here. 
 ```
 
-### What social groups are impacted by this topic?
+### What are some key sites, locations, or geographies relevant to this topic? This might be a large boundary like a country or a small community. 
+
+```{r eval=FALSE}
+Fill response here. 
+```
+
+### What social groups are impacted by this topic, and how?
 
 ```{r eval=FALSE}
 Fill response here. 
@@ -111,7 +156,7 @@ Fill response here.
 Fill response here. 
 ```
 
-### How am I implicated in this topic?
+### How are you implicated in this topic?
 
 ```{r eval=FALSE}
 Fill response here. 
@@ -125,7 +170,7 @@ Fill response here.
 
 ---
 
-## Open Government Data
+## Background on Open Government Data
 
 In May 2009, Data.gov - a web portal for accessing US government datasets - was launched by then federal Chief Information Officer Vivek Kundra. Following this, in December 2009, then US President Barack Obama signed the Open Government Data Directive, requiring that all federal agencies post at least 3 high value datasets on data.gov within 45 day. A few years later in May 2013, Pres. Obama signed an Executive Order to: "M"ak[e] Open and Machine Readable the New Default for Government Information." 
 
@@ -306,11 +351,34 @@ Notably, without descriptive metadata, it is much more likely that we will make 
 
 At this point in the quarter, you will begin to search for open government or academic datasets related to your chosen topic. You will not necessarily be working with these datasets. After aggregating lab 2 from everyone and reviewing which datasets will work in the context of this course, I will select one dataset for each group to examine for the quarter. 
 
-I have some recommendations for how you go about searching for data. 
+I have some recommendations for how you go about searching for data, and I've listed them for each of the project groups below:
 
-1. Go to data.gov and search for your topic. This will return federal datasets related to your topic as well as datasets that have been submitted from cities and states to data.gov. 
-2. Go to the open data portal for a certain city or state of interest and search for your topic. Several such portals have been linked in the text above, and you can feel free to search for others by entering "[CITY OR STATE NAME] Open Data Portal" into a search query. 
-3. Lastly, you can try searching for your topic on Google's dataset search: https://datasetsearch.research.google.com/
+### Healthcare
+
+[https://data.medicaid.gov/](https://data.medicaid.gov/)
+[https://data.medicare.gov/](https://data.medicare.gov/)
+[https://data.healthcare.gov/](https://data.healthcare.gov/)
+[https://data.chhs.ca.gov/](https://data.chhs.ca.gov/)
+
+### Food Security
+
+
+
+### Domestic Abuse
+
+
+
+### Income Security
+
+
+
+### Environment
+
+
+
+### Infrastrucutre for Remote Work
+
+
 
 > Last week there was a question about whether you could use datasets from Kaggle. You may. I will just ask you to consider the source of the data in the final question, and whether you find that source reputable. 
 
