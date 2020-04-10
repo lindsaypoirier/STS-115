@@ -351,34 +351,39 @@ Notably, without descriptive metadata, it is much more likely that we will make 
 
 At this point in the quarter, you will begin to search for open government or academic datasets related to your chosen topic. You will not necessarily be working with these datasets. After aggregating lab 2 from everyone and reviewing which datasets will work in the context of this course, I will select one dataset for each group to examine for the quarter. 
 
-I have some recommendations for how you go about searching for data, and I've listed them for each of the project groups below:
+I have some recommendations for how you go about searching for data, and I've listed them for each of the project groups below. However, please also feel free to search for data in city and state open data portals.
 
 ### Healthcare
 
-[https://data.medicaid.gov/](https://data.medicaid.gov/)
-[https://data.medicare.gov/](https://data.medicare.gov/)
-[https://data.healthcare.gov/](https://data.healthcare.gov/)
-[https://data.chhs.ca.gov/](https://data.chhs.ca.gov/)
+* [https://data.medicaid.gov/](https://data.medicaid.gov/)
+* [https://data.medicare.gov/](https://data.medicare.gov/)
+* [https://data.healthcare.gov/](https://data.healthcare.gov/)
+* [https://data.chhs.ca.gov/](https://data.chhs.ca.gov/)
 
 ### Food Security
 
-
+* [https://www.data.gov/](https://www.data.gov/)
+* [https://www.ers.usda.gov/data-products/](https://www.ers.usda.gov/data-products/)
 
 ### Domestic Abuse
 
-
+* [https://www.data.gov/](https://www.data.gov/)
+* [https://www.bjs.gov/](https://www.bjs.gov/) (Note that the data here are not particularly easy to work with, but I will help to download them when the times comes.)
 
 ### Income Security
 
-
+* [https://www.data.gov/](https://www.data.gov/)
+* [https://www.bls.gov/](https://www.bls.gov/) (Note that the data here are not particularly easy to work with, but I will help to download them when the times comes.)
 
 ### Environment
 
-
+* [https://edg.epa.gov/metadata/catalog/main/home.page](https://edg.epa.gov/metadata/catalog/main/home.page)
 
 ### Infrastrucutre for Remote Work
 
-
+I recommend searching some city open data portals such as:
+* [https://opendata.cityofnewyork.us/](https://opendata.cityofnewyork.us/)
+* [https://datasf.org/opendata/](https://datasf.org/opendata/)
 
 > Last week there was a question about whether you could use datasets from Kaggle. You may. I will just ask you to consider the source of the data in the final question, and whether you find that source reputable. 
 
