@@ -1,0 +1,464 @@
+---
+title: "Lab 8 - Summarizing Insights and Data Gaps"
+output: 
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+editor_options:
+  chunk_output_type: inline
+---
+
+## Instructions and Overview
+
+In this final lab, you will curate what you have discovered across previous labs - both summarizing insights and critiquing knowledge gaps. This text will be added to an "About" page on your data dashboard. You should write each section outlined below as if you were presenting this data to someone else. What should others know about the data? How best can you summarize the diverse issues running through the data? You likely have written much of this content in other labs. The objective of this lab is to selectively pull from what you've written in other labs, draw new connections across your analyses, and summarize key issues so that you can present your data publicly. However, be careul not to just copy and paste random snippets from other labs. Be sure that the text flows in a way that conveys something to a viewer. 
+
+## Getting Started
+
+### Load the relevant libraries
+```{r}
+library(tidyverse)
+library(lubridate)
+library(shiny)
+library(shinydashboard)
+library(shinyWidgets)
+```
+
+### Import and clean example datasets 
+
+```{r}
+hospitals <- read.csv("datasets/Hospitals.csv", stringsAsFactors = FALSE)
+
+cases <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", stringsAsFactors = FALSE)
+
+#Do not worry about this line of code for now. Since the cases data gets appended every day with a new column representing that day's case counts, if we want the total cases per country, we need to add up all of the previous day's counts into a new column. The column below does this for us. 
+cases <- 
+  cases %>% 
+  mutate(Total.Cases = 
+           cases %>% 
+           select(starts_with("X")) %>% 
+           rowSums()
+         ) %>%
+  select(Province.State, Country.Region, Total.Cases)
+
+hospitals$ZIP <- as.character(hospitals$ZIP)
+
+hospitals$ZIP <- str_pad(hospitals$ZIP, 5, pad = "0") 
+
+is.na(hospitals) <- hospitals == "NOT AVAILABLE"
+is.na(hospitals) <- hospitals == -999
+is.na(cases) <- cases == ""
+
+hospitals$SOURCEDATE <- ymd_hms(hospitals$SOURCEDATE)
+hospitals$VAL_DATE <- ymd_hms(hospitals$VAL_DATE)
+hospitals <- hospitals %>%
+  mutate(SOURCEDATE_YEAR = year(SOURCEDATE))
+```
+
+### Import and clean your dataset. 
+
+```{r}
+#Copy and paste relevant code from Lab 4 to import your data here. 
+
+#Copy and paste relevant code from Lab 4 to clean your data here. This includes any row binding, character removals, converions in variable type, date formatting, or NA conversions. 
+```
+
+## Summarize Data Source
+
+Referring back to lab 3, in about 150 words, summarize your dataset and some of the things you learned about the historical and cultural context of your dataset. Note that this section can be almost word-for-word how you introduce your dataset in your final presentation (see criteria 4 in the final presentation assignment on Canvas). The only thing that may be different than in your final presentation is that you do not need to reference the data limitations *in this section*, as you will elaborate on them later in this assignment. This section should include all of the following:
+
+1. What the data represents
+2. Who produced it
+3. Its observational unit
+4. Some variables that describe that observational unit
+5. A bit of its history/context from Lab 3
+
+> Example: "The analysis presented in this dashboard is based on a dataset put out by the US EPA [<-- who produced it] that documents the environmental compliance and enforcement history of every EPA-regulated facility in the US, including prisons [<-- what it represents]. For every EPA-regulated facility in the US in a given year [<-- observational unit], the dataset reports information such as the permits the facility has been awarded, enforcement actions taken against the facility, and penalties it has assessed [<-- variables]. The EPA has been integrating this data from a number of different compliance databases for major federal regulations (such as the Clean Air Act and the Safe Drinking Water Act) for over ten years. Since states populate many of the databases on which ECHO relies, there are sometimes disparities in how data is reprsented from state to state as a result of different reporting procedures, data collection technologies, database infrastrucutres, local laws, and political incentives to report values accurately [<-- history/context]."
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+## Summarize Questions for Analysis
+
+Referring back to labs 4-6, what were some of the questions you were posing as you approached your data exploration? What were you hoping to learn from your analysis that this particular dataset may have been able to help address? List at least three questions below, and indicate why you were asking each question. Make sure that the questions you list are relevant to this specific dataset.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+## Summarize Insights
+
+In about 300 words, describe some conclusions that you were able to interpret *from your data analysis.* Each point you make in this section should do two things. First, you should reference specific empirical evidence that you were able to extrapolate from your data (through plots, charts, etc.), and second, you should *interpret* this evidence. This means that it is not enough to say that the average annual income in x community was $30000. What does that mean? Why should I, or anyone looking at your data, care about this value you calculated? If you were talking to someone that has the power to make decisions on your topic, what would you want that person to think after seeing your results? Note that you will reference quantitative insights when you show your empirical evidence, but you will reference issues beyond the data as you interpret the results. Some additional criteria for this section:
+
+1. Be sure to contextualize your findings in the appropriate temporal and geographic context.
+
+  * Imprecise: "There are more general acute care hospitals than any other hospital."
+  * Better: "Based on data aggregated from government sources by Oak Ridge National Laboratory since 2012, there are more general acute care hospitals in the United States than any other type of hospital. This data was last updated in 2018."
+  
+2. Consider you sample. 
+
+  * Imprecise: "There are 7146 open hospitals in the US according to data aggregated by the Oak Ridge National Laboratory."
+  * Better: "There are 7146 open hospitals in the US according to data aggregated by the Oak Ridge National Laboratory. This does not include nursing homes or health centers."
+
+3. Make a clear distinction between what the data empirically shows you and how you interpret the results. 
+  
+  * Imprecise: "This data indicates that many hospitals do not have enough beds to take on new patients." 
+  * Better: "According to this data, the median number of beds at general acute hospitals in the US is 139. Comparing this to the case rates in the US since January, this suggests that many hospitals will not have enough beds available to take on the influx in patients if case rates continue to grow exponentially."
+
+4. Consider your data issues:
+  
+  * Imprecise: "From January to present Covid-19 has spread most dramatically in the US."
+  * Better: "From January to present Covid-19 confirmed cases has spread most dramatically in the US. However, with various regulatory, financial, social, and material barriers to testing potential cases, it is difficult to know the extent to which this data is representative of the actual spread of the virus."
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+## Characterize Knowledge Gaps
+
+Knowledge gaps refer to the things that we don't know due to the fact that certain data was not collected, was not collected accurately, was not collected in a format or categorization structure that allowed us to attend to an issue, or was not documented. When presenting data, knowledge gaps are often just as important to document as insights as they communicate the limits of our analysis, and possibilities for either future research or improvements to the data. I list five different types of knowledge gaps below, and pose questions we might ask for each. You should respond to *three* of the questions below in about 50-100 words each in relation to your data. 
+
+### Inaccurate Data
+
+Inaccurate data refers to data that is just incorrect. Typos and other data entry issues may constitute inaccurate data. For instance, sometimes addresses in a dataset may be misspelled, making it hard to geo-code those addresses. Or perhaps someone forgot to put a decimal point in a number increasing by the value by a power of 10. Inaccurate data can also refer to deliberate misreporting. Think about the firefighters that deliberately entered stopwatch data incorrectly as they were afraid of losing their jobs based on RAND's data analysis in Joe Flood's *The Fires*. Or consider countries and states that are deliberately under-reporting Covid-19 case counts so that they can justify opening businesses sooner. 
+
+In what ways might the data in your dataset be inaccurate? Describe in specific detail how these inaccuracies might affect your data analysis. Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Incomplete Data
+
+Incomplete data refers to data that does not cover the scope of an issue that we need to address. Sometimes this is because specific values in the dataset are missing (or appearing as NAs). For instance, in the hospitals dataset there are a number of hospitals in which no BEDS variable was recorded. Some of these hospitals are currently (or at the time of data collection) operating. 
+
+```{r fig.height=5, fig.width=10}
+#Run. 
+
+hospitals %>%
+  mutate(BEDS_NA = ifelse(is.na(BEDS), "Beds Variable Missing", "Beds Variable Not Missing")) %>% 
+  ggplot(aes(x = BEDS_NA, fill = STATUS)) + 
+    geom_bar() +
+  labs(title = "Number of Hospitals with Missing Beds Variable by Status", x = "Beds Variable", y = "Number of Hospitals", col = "Status") +
+  theme_bw()
+```
+
+Incomplete data can also refer to sampling issues - or when the data that we have available does not represent enough of a population to draw conclusions. For instance, the cases data will only represent confirmed cases of Covid-19. It cannot represent those that have had the virus but have not been tested for it. This means that using this data to understand the extent of the spread may under-count areas with shortages of testing supplies, where testing has not been politically prioritized, or where there are higher populations with difficulty accessing testing. 
+
+Note that all data is to some degree incomplete. There is no such thing as a dataset that covers everything. However, here we are examining how the choices of what to include or exclude impact our data analysis. 
+
+In what ways might the incompleteness of your data fail to address the extent of the issues you had hoped to examine in your analysis? Describe in specific detail how the data's incompleteness might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Semantics and Categorization Issues
+
+Semantics issues refer to instances where we cannot represent certain phenomena in our data because the data's definitions have precluded them from consideration. For instance, what counts as a bed in the hospitals dataset? Do ambulatory beds count? Are beds calculated based on the number of actual cots in the hospital, or the number of spaces available for beds? Does a bed count assume that there are enough staff and resources to support that many patients in those beds? Check out [this article](https://www.mja.com.au/journal/2010/193/5/hospital-beds-primer-counting-and-comparing) to see just how difficult it can be to come up with a standard definition for hospital beds. 
+
+Categorization issues refer to instances where we cannot represent certain phenomena in our data because the data's categories are structured so as to exclude that issue from consideration. For instance, if the Johns Hopkins team is relying on internationally standardized country codes to report the data, where do cases reported in unrecognized states get reported? Are cases reported in Crimea being reported in the Ukraine, in Russia, or not at all?
+
+In what ways have semantics or categorization issues made it difficult to glean relevant insights from your dataset? Describe in specific detail how these issues might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Aggregation Issues
+
+Often, in published data, individual data points are aggregated and reported according to particular groupings (sometimes by geography, demographics, or time period, for example). This is the case for all of your datasets:
+
+* Environment: Individual air quality readings within a county on a day are aggregated into one AQI value.
+* Infrastructure: Individual household broadband is aggregated by neighborhood.
+* Hospitals: Individual hospitalization discharges are aggregated into a total number of discharges/average charges at a particular hospital for a particular diagnosis.
+* SNAP: Individual recertification processes are summarized across a state for a given month. 
+* Domestic Abuse: Individual domestic abuse calls are aggregated into total calls for an agency in a given month.
+* Income security: Costs faced by individual households are aggregated by county, family type, and year. 
+
+Sometimes this is to protect the privacy of those represented in the data, and sometimes data is aggregated so as to summarize values at a scale in which it is easier to draw comparisons. For instance, the cases data does not report every single confirmed case. This would likely be a privacy concern, and would produce such a large dataset that it would be difficult to immediately draw comparisons between countries/dates. Instead, it aggregates the summary of total confirmed cases per day by country. Aggregating data like this can be important for the reasons I just described, but it can also hide certain issues that we would have only been able to see if the data was reported at an individual level. For instance, aggregating confirmed case counts by country, we cannot see anything about the demographic breakdown of individuals with confirmed cases in each country. This data also cannot tell us if there were certain local communities that had disprortionately high confirmed cases. 
+
+In what what ways may the choice of scale into which your data was aggregated hide more localized or individualized issues? Describe in specific detail how these issues might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### Personal Knowledge Gaps
+
+I'm hoping that you learned a lot about your data domains in the process of analyzing your datasets. (I know that I did). However, as reflective data analysts, it is important to admit what we don't know about our topics that makes it more challenging to discern what the represents. What don’t you know about your data domain that has made it difficult to interpret the data? Describe in specific detail how these cultural gaps might affect your data analysis.  Reference a specific analysis you've completed (either through transformation or plotting), and describe how this issue might impact how you interpret your data analysis.
+
+```{r eval=FALSE}
+Fill your response here. 
+```
+
+### BONUS (up to +2 on this lab)
+
+Using the functions we have learned in R, create one plot that graphically represents one of the knowledge gaps that you outlined above. It might be a plot that displays the sampling gaps. It might be a plot that showcases where data quality issues are present in your data. It might be a set of plots that show how different results are produced when different assumptions are made. Be creative, considering how you can use the data to show what is missing. Write a caption for this plot, explaining how it illustrates potential issues with your data analysis. 
+
+```{r fig.height=5, fig.width=10}
+#Fill code here. 
+```
+
+## Continue your shiny app.
+
+Now we will aggregate all of the text that you produced above into an "About the Data" page on your Shiny App. Follow the instructions below to fill your text into a new page created on the front end of the app. 
+
+```{r}
+#IF YOU COMPLETED LAB 7, DELETE MY CODE BELOW AND REPLACE IT BY COPYING AND PASTING YOUR INPUT VARIABLES FROM LAB 7. OTHERWISE JUST DELETE THE CODE IN THIS SECTION. 
+
+geo_input_choices <- 
+  hospitals %>% 
+  select(STATE) %>% 
+  distinct() %>% 
+  arrange(STATE) %>% pull()
+
+date_input_start <- 
+  hospitals %>% 
+  summarize(date = min(SOURCEDATE))
+
+date_input_end <- 
+  hospitals %>% 
+  summarize(date = max(SOURCEDATE))
+
+year_input_choices <- 
+  hospitals %>%
+  select(SOURCEDATE_YEAR) %>%
+  distinct() %>%
+  pull() %>%
+  sort()
+```
+
+In the UI below, follow the capitalized instructions to update your Shiny App. 
+
+```{r}
+ui <- dashboardPage(
+  
+  #REPLACE 'TITLE HERE' BELOW WITH YOUR OWN TITLE
+  dashboardHeader(title = "TITLE HERE"),
+  #REPLACE 'TITLE HERE' ABOVE WITH YOUR OWN TITLE
+  
+  dashboardSidebar(
+      sidebarMenu(
+        menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+        menuItem("About the Data", tabName = "about", icon = icon("info-circle"))
+      )
+    #IF YOU COMPLETED LAB 7, REPLACE THE INPUTS BELOW WITH YOUR OWN FROM LAB 7. OTHERWISE DELETE THE CODE BELOW.
+    ,
+          pickerInput(inputId = "geo_val", label = "Select an geography:", choices = geo_input_choices, selected = geo_input_choices, multiple = TRUE, options = list(`actions-box` = TRUE,`live-search` = TRUE)),
+      dateRangeInput(inputId = "date_val", label = "Select a date range:", start = date_input_start$date, end = date_input_end$date),
+      pickerInput(inputId = "year_val", label = "Select a year:", choices = year_input_choices, selected = year_input_choices, multiple = TRUE, options = list(`actions-box` = TRUE,`live-search` = TRUE))
+    #IF YOU COMPLETED LAB 7, REPLACE THE INPUTS ABOVE WITH YOUR OWN FROM LAB 7. OTHERWISE DELETE THE CODE ABOVE.
+  ),
+  
+  dashboardBody(
+    tags$head(tags$style(HTML('.content-wrapper { overflow: auto; } .info-box-text{ white-space: normal; }'))),
+    tabItems(
+      tabItem(tabName = "dashboard",
+                #IF FILLING VALUE BOX WITH MEASURES OF CENTRAL TENDENCY, COMMENT OUT THE FOURTH THROUGH SIXTH INFOBOXOUTPUT LINES BELOW (with value4, value5, and value6). IF FILLING VALUE BOX WITH MAXIMUM AND MINIMUM VALUES, COMMENT OUT THE FIRST THROUGH THIRD INFOBOXOUTPUT LINES BELOW (with value1, value2, and value3). 
+        infoBoxOutput("value1", width = 4),
+        infoBoxOutput("value2", width = 4),
+        infoBoxOutput("value3", width = 4),
+        infoBoxOutput("value4", width = 4),
+        infoBoxOutput("value5", width = 4),
+        infoBoxOutput("value6", width = 4),
+        box(plotOutput("plot1")),
+        box(plotOutput("plot2")),
+        box(plotOutput("plot3")),
+        box(plotOutput("plot4"))
+      ),
+      tabItem(tabName = "about",
+              tags$h1("Data Source"),
+                #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR DATA'S SOURCE
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"),
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR DATA'S SOURCE
+              
+              tags$h1("Questions for Analysis"),
+              #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR DATA'S CONTEXT
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"),
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR DATA'S SOURCE
+              
+              tags$h1("Insights"),
+              #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR INSIGHTS
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"),
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR INSIGHTS
+              
+              tags$h1("Knowledge Gaps"),
+              #REPLACE TEXT IN QUOTATIONS BELOW WITH YOUR OWN TEXT ABOUT YOUR KNOWLEDGE GAPS
+              tags$p("Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?")
+              #REPLACE TEXT IN QUOTATIONS ABOVE WITH YOUR OWN TEXT ABOUT YOUR KNOWLEDGE GAPS
+      )
+    )
+  )
+)
+
+```
+
+We won't be touching the server function this week. You can copy and paste yours from Lab 6 or 7 to replace my code below.
+
+```{r}
+#DELETE ALL OF MY SERVER FUNCTION BELOW AND REPLACE IT WITH YOUR MOST RECENT SERVER FUNCTION.
+
+server <- function(input, output) {
+  
+  output$value1 <- renderInfoBox({
+    quant_insight1 <-
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE > input$date_val[1] &
+        SOURCEDATE < input$date_val[2]
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>%
+      summarize(median_value = median(BEDS, na.rm = TRUE))
+
+    infoBox('Median number of beds in open general acute care hospitals', quant_insight1, icon = icon("stats", lib='glyphicon'), color = "light-blue")
+  })
+  
+  output$value2 <- renderInfoBox({
+    quant_insight2 <- 
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE > input$date_val[1] &
+        SOURCEDATE < input$date_val[2]
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>%
+      summarize(total_values = n())
+    
+    infoBox('Number of open general acute care hospitals', quant_insight2, icon = icon("stats", lib='glyphicon'), color = "light-blue")
+  })
+  
+  output$value3 <- renderInfoBox({
+    quant_insight3 <- 
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE > input$date_val[1] &
+        SOURCEDATE < input$date_val[2]
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>%
+      summarize(percent_missing = sum(is.na(BEDS), na.rm = TRUE)/n()*100)
+
+    infoBox('Percent open general acute care hospitals with missing beds value', round(quant_insight3, 2), icon = icon("stats", lib='glyphicon'), color = "light-blue")
+  })
+
+  output$value4 <- renderInfoBox({
+    quant_insight4 <-
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE > input$date_val[1] &
+        SOURCEDATE < input$date_val[2]
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>% 
+      filter(BEDS == max(BEDS, na.rm = TRUE)) %>%
+      select(NAME, BEDS)
+
+    quant_insight4 <- paste(paste(quant_insight4$NAME, collapse = ''), quant_insight4$BEDS[1], sep = ": ") #some of you may have more than one row with a maximum value. This concatentates them into a single string
+    
+    infoBox('Open general acute care hospital with maximum beds', quant_insight4, icon = icon("stats", lib='glyphicon'), color = "light-blue")
+  })
+  
+  output$value5 <- renderInfoBox({
+    quant_insight5 <- 
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE > input$date_val[1] &
+        SOURCEDATE < input$date_val[2]
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>% 
+      filter(BEDS == min(BEDS, na.rm = TRUE)) %>%
+      select(NAME, BEDS)
+
+    quant_insight5 <- paste(paste(quant_insight5$NAME, collapse = ''), quant_insight5$BEDS[1], sep = ": ") #some of you may have more than one row with a minimum value. This concatentates them into a single string
+
+    infoBox('Open general acute care hospital with minimum beds', quant_insight5, icon = icon("stats", lib='glyphicon'), color = "light-blue")
+  })
+  
+  output$value6 <- renderInfoBox({
+    quant_insight6 <- 
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE > input$date_val[1] &
+        SOURCEDATE < input$date_val[2]
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>%
+      summarize(percent_missing = sum(is.na(BEDS), na.rm = TRUE)/n()*100)
+    
+    infoBox('Percent open general acute care hospitals with missing beds value', round(quant_insight6, 2), icon = icon("stats", lib='glyphicon'), color = "light-blue")
+  })
+  
+  output$plot1 <- renderPlot({
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE_YEAR %in% input$year_val
+        ) %>%
+      filter(STATUS == "OPEN") %>%
+      ggplot(aes(x = TYPE)) + 
+      geom_bar() +
+      labs(title = "Number of Hospitals in the US that are Open by Type", x = "Type", y = "Count of Hospitals") + 
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust=1)) 
+  })
+  
+  output$plot2 <- renderPlot({
+    hospitals %>% 
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE_YEAR %in% input$year_val
+        ) %>%
+      filter(STATUS == "OPEN") %>%
+      ggplot(aes(x = TYPE)) + 
+      geom_bar() +
+      labs(title = "Number of Hospitals in the US that are Open by Type", x = "Type", y = "Count of Hospitals") + 
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust=1)) 
+  })
+  
+  output$plot3 <- renderPlot({
+    hospitals %>%
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE_YEAR %in% input$year_val
+        ) %>%
+      filter(STATUS == "OPEN") %>%
+      ggplot(aes(x = TYPE, y = BEDS)) +
+      geom_boxplot() +
+      labs(title = "Distribution of Beds across Hospitals in the US that are Open by Type", x = "Type", Y = "Beds") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust=1)) + #Changes x-axis tick labels 90 degrees
+      coord_flip() #Flips the x and y axis to make the data easier to read and compare
+  })
+  
+  output$plot4 <- renderPlot({
+    hospitals %>%
+      filter(
+        STATE %in% input$geo_val & 
+        SOURCEDATE_YEAR %in% input$year_val
+        ) %>%
+      filter(STATUS == "OPEN" & TYPE == "GENERAL ACUTE CARE") %>%
+      ggplot(aes(x = OWNER, y = BEDS)) +
+      geom_boxplot() +
+      labs(title = "Distribution of Beds across Hospitals in the US that are Open by Type", x = "OWNER", Y = "Beds") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust=1)) + #Changes x-axis tick labels 90 degrees
+      coord_flip() #Flips the x and y axis to make the data easier to read and compare
+  })
+}
+```
+
+
+```{r}
+shinyApp(ui, server)
+```
+
+
